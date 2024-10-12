@@ -1,5 +1,5 @@
-from MA660E.probability import * 
-from MA660E.utils import *
+from statstoolkit.probability import * 
+from statstoolkit.utils import *
 import matplotlib.pyplot as plt
 
 
