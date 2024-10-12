@@ -288,3 +288,26 @@ def wblpdf(*args, **kwargs):
 
     """
     return st.weibull_min.pdf(*args, **kwargs)
+
+def mvnpdf(*args, **kwargs):
+    """Probability density function at x of the given RV.
+
+    Parameters
+    ----------
+    x : array_like
+        quantiles
+    arg1, arg2, arg3,... : array_like
+        The shape parameter(s) for the distribution (see docstring of the
+        instance object for more information)
+    loc : array_like, optional
+        location parameter (default=0)
+    scale : array_like, optional
+        scale parameter (default=1)
+
+    Returns
+    -------
+    pdf : ndarray
+        Probability density function evaluated at x
+
+    """
+    return st.multivariate_normal.pdf(*args, **kwargs)

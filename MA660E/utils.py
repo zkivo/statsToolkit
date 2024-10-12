@@ -97,3 +97,6 @@ def linspace(*args, **kwargs):
 
     """
     return np.linspace(*args, **kwargs)
+
+def meshgrid(*args, **kwargs):
+    return np.meshgrid(*args, **kwargs)
