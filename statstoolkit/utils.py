@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def linspace(*args, **kwargs):
     """
     Return evenly spaced numbers over a specified interval.
@@ -97,6 +98,7 @@ def linspace(*args, **kwargs):
 
     """
     return np.linspace(*args, **kwargs)
+
 
 def meshgrid(*args, **kwargs):
     return np.meshgrid(*args, **kwargs)

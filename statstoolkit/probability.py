@@ -1,5 +1,6 @@
 from scipy import stats as st
 
+
 def binompdf(*args, **kwargs):
     """Probability mass function at k of the given RV.
 
@@ -20,6 +21,7 @@ def binompdf(*args, **kwargs):
 
     """
     return st.binom.pmf(*args, **kwargs)
+
 
 def poisspdf(*args, **kwargs):
     """Probability mass function at k of the given RV.
@@ -42,6 +44,7 @@ def poisspdf(*args, **kwargs):
     """
     return st.poisson.pmf(*args, **kwargs)
 
+
 def geopdf(*args, **kwargs):
     """Probability mass function at k of the given RV.
 
@@ -62,6 +65,7 @@ def geopdf(*args, **kwargs):
 
     """
     return st.geom.pmf(*args, **kwargs)
+
 
 def nbinpdf(*args, **kwargs):
     """Probability mass function at k of the given RV.
@@ -84,6 +88,7 @@ def nbinpdf(*args, **kwargs):
     """
     return st.nbinom.pmf(*args, **kwargs)
 
+
 def hygepdf(*args, **kwargs):
     """Probability mass function at k of the given RV.
 
@@ -104,6 +109,7 @@ def hygepdf(*args, **kwargs):
 
     """
     return st.hypergeom.pmf(*args, **kwargs)
+
 
 def betapdf(*args, **kwargs):
     """Probability density function at x of the given RV.
@@ -128,6 +134,7 @@ def betapdf(*args, **kwargs):
     """
     return st.beta.pdf(*args, **kwargs)
 
+
 def chi2pdf(*args, **kwargs):
     """Probability density function at x of the given RV.
 
@@ -150,6 +157,7 @@ def chi2pdf(*args, **kwargs):
 
     """
     return st.chi2.pdf(*args, **kwargs)
+
 
 def exppdf(*args, **kwargs):
     """Probability density function at x of the given RV.
@@ -174,6 +182,7 @@ def exppdf(*args, **kwargs):
     """
     return st.expon.pdf(*args, **kwargs)
 
+
 def fpdf(*args, **kwargs):
     """Probability density function at x of the given RV.
 
@@ -196,6 +205,7 @@ def fpdf(*args, **kwargs):
 
     """
     return st.f.pdf(*args, **kwargs)
+
 
 def normpdf(*args, **kwargs):
     """Probability density function at x of the given RV.
@@ -220,6 +230,7 @@ def normpdf(*args, **kwargs):
     """
     return st.norm.pdf(*args, **kwargs)
 
+
 def lognpdf(*args, **kwargs):
     """Probability density function at x of the given RV.
 
@@ -242,6 +253,7 @@ def lognpdf(*args, **kwargs):
 
     """
     return st.lognorm.pdf(*args, **kwargs)
+
 
 def tpdf(*args, **kwargs):
     """Probability density function at x of the given RV.
@@ -266,6 +278,7 @@ def tpdf(*args, **kwargs):
     """
     return st.t.pdf(*args, **kwargs)
 
+
 def wblpdf(*args, **kwargs):
     """Probability density function at x of the given RV.
 
@@ -288,6 +301,7 @@ def wblpdf(*args, **kwargs):
 
     """
     return st.weibull_min.pdf(*args, **kwargs)
+
 
 def mvnpdf(*args, **kwargs):
     """Probability density function at x of the given RV.
