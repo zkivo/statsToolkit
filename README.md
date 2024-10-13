@@ -1,7 +1,7 @@
 # Statistical Methods for Data Science (statsToolkit)
 The project is sponsored by **Malmö Universitet** developed by Eng. Marco Schivo and Eng. Alberto Biscalchin under the supervision of Associete Professor Yuanji Cheng and is released under the **MIT License**. It is open source and available for anyone to use and contribute to.
 
-Code course: MA660E
+Internal course Code reference: MA660E
 
 ---
 
