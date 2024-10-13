@@ -168,13 +168,13 @@ scatterplot(x, y, title="Example 2D Scatter Plot", xlabel="X-Axis", ylabel="Y-Ax
 
 #### Example Usage (3D-like Scatter Plot):
 ```python
-from statstoolkit.visualization import scatterplot
+from statstoolkit.visualization import scatterplot_3d
 
 x = [1, 2, 3, 4]
 y = [10, 20, 30, 40]
 z = [50, 100, 200, 300]
 
-scatterplot(x, y, z=z, symbol="*", title="Example 3D-like Scatter Plot", xlabel="X-Axis", ylabel="Y-Axis", color="blue")
+scatterplot_3d(x, y, z, symbol="o", title="Example 3D Scatter Plot", xlabel="X-Axis", ylabel="Y-Axis", zlabel="Z-Axis", color="blue")
 ```
 ![Example 3D Scatter Plot](examples/scatterplot_3d.png)
 
