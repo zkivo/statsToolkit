@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def bar_chart(x, y, title=None, xlabel=None, ylabel=None, color=None, figsize=(10, 6), **kwargs):
@@ -193,3 +194,49 @@ def scatterplot(x, y, z=None, symbol='o', title=None, xlabel=None, ylabel=None, 
     plt.ylabel(ylabel)
     plt.show()
 
+
+def scatterplot_3d(x, y, z, symbol='o', title=None, xlabel=None, ylabel=None, zlabel=None, color=None, figsize=(10, 6),
+                   **kwargs):
+    """
+    Create a true 3D scatter plot.
+
+    Parameters
+    ----------
+    x : list or array-like
+        Data for the x-axis.
+    y : list or array-like
+        Data for the y-axis.
+    z : list or array-like
+        Data for the z-axis (third dimension).
+    symbol : str, optional
+        Marker symbol for the scatter plot (default is 'o').
+    title : str, optional
+        Title of the chart.
+    xlabel : str, optional
+        Label for the x-axis.
+    ylabel : str, optional
+        Label for the y-axis.
+    zlabel : str, optional
+        Label for the z-axis.
+    color : str or list, optional
+        Color(s) for the points.
+    figsize : tuple, optional
+        Size of the figure (width, height) in inches.
+    kwargs : additional keyword arguments
+        Additional arguments for `Axes3D.scatter`.
+
+    Examples
+    --------
+    >>> scatterplot_3d([1, 2, 3, 4], [10, 20, 25, 30], [50, 100, 200, 300], title="3D Scatter Plot")
+    """
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Plot the 3D scatter
+    ax.scatter(x, y, z, marker=symbol, c=color, **kwargs)
+
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_zlabel(zlabel)
+    plt.show()
