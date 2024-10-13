@@ -180,21 +180,6 @@ scatterplot_3d(x, y, z, symbol="o", title="Example 3D Scatter Plot", xlabel="X-A
 
 ---
 
-## Example Graphics
-
-All of the above code snippets will generate charts that you can customize further. Example output images for each function are provided in the **`examples/`** directory of the project:
-
-- Bar Chart: `examples/bar_chart.png`
-- Pie Chart: `examples/pie_chart.png`
-- Histogram: `examples/histogram.png`
-- Boxplot: `examples/boxplot.png`
-- 2D Scatter Plot: `examples/scatterplot_2d.png`
-- 3D-like Scatter Plot: `examples/scatterplot_3d.png`
-
-These example images demonstrate what each plot looks like with the given sample data. Feel free to modify the input values, colors, labels, and other parameters to create the visuals that best fit your needs.
-
----
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
