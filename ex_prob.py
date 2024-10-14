@@ -114,5 +114,65 @@ plt.ylabel('Probability Density')
 plt.legend()
 plt.grid(True)
 
+# ----------------------------- #
+# Example 6: Binomial CDF examples
+# ----------------------------- #
+
+print(binocdf(20, 75, 0.23)) # 0.8153
+print(1 - binocdf(14, 75, 0.23)) # 0.7714
+print(binocdf(21, 75, 0.23) - binocdf(6, 75, 0.23)) #0.8762
+
+print(tcdf(2.31, 73)) # 0.9881
+print(1 - tcdf(8.25, 73)) # 2.3865e-12
+print(tcdf(9.63, 73) - tcdf(3.17, 73)) # 0.0011
+
+# ----------------------------- #
+# Example 7: Calculate the probability of a custom PDF
+# ----------------------------- #
+
+def denf(x, c):
+    return c * (1 + x) * (2 + np.sin(3 * x))
+
+c0 = 1 / (24 + 1 / 3 + (np.sin(12) - 15 * np.cos(12)) / 9)
+
+Prob = integral(lambda x: denf(x, c0), 1, 3)
+
+print("Prob:", Prob) # 0.5503
+
+# second example
+
+c = 1 / (1 / 6 + 3 / 16 + 1 / (7 * 2 ** 7))
+
+def denf_2d(y, x):
+    return c * (y ** 2 + 3 * x * y + 4 * y ** 5 * x ** 6)
+
+def ymin(x):
+    return x ** (1 / 2)
+
+def ymax(x):
+    return x ** (1 / 3)
+
+prob_2d = integral2(denf_2d, 0, 1 / 2, ymin, ymax)
+
+print("prob_2d:", prob_2d) # 0.1246
+
+# ----------------------------- #
+# Example 8: Calculate Expectation and Variance
+# ----------------------------- #
+
+def denf(x, c):
+    return c * x * (1 + x) * (2 + np.sin(3 * x))
+
+def denvf(x, c):
+    return c * (x - Mu_x) ** 2 * (1 + x) * (2 + np.sin(3 * x))
+
+c0 = 1 / (24 + 1 / 3 + (np.sin(12) - 15 * np.cos(12)) / 9)
+
+Mu_x = integral(lambda x: denf(x, c0), 1, 3)
+V_x  = integral(lambda x: denvf(x, c0), 1, 3)
+
+print("Mu_x (mean):", Mu_x) # 1.2506
+print("V_x (variance):", V_x) # 0.7344
+
 
 plt.show()
