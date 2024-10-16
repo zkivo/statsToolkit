@@ -175,7 +175,7 @@ print("Mu_x (mean):", Mu_x) # 1.2506
 print("V_x (variance):", V_x) # 0.7344
 
 # ----------------------------- #
-# Example 8: Critical values
+# Example 9: Critical values
 # ----------------------------- #
 
 alpha = 0.0132
@@ -199,5 +199,15 @@ v2 = 13
 print(finv(1 - alpha, v1, v2)) # 4.0072
 print(finv(1 - alpha / 2, v1, v2)) # 4.7321
 print(finv(alpha / 2, v1, v2)) # 0.1710
+
+# ----------------------------- #
+# Example 10: Generate random values
+# ----------------------------- #
+
+print(randperm(7))
+print(randi([1, 350], 1, 5))
+print(randi([1, 350], 6))
+print(rand(1,5))
+print(-3+5*rand(1, 6))
 
 # plt.show()

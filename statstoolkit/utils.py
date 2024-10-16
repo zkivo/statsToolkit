@@ -776,3 +776,76 @@ def integral2(*args, **kwargs):
     """
     i, _ = dblquad(*args, **kwargs)
     return i
+
+def randperm(n):
+    """
+    Return a random permutation of an array.
+
+    Parameters
+    ----------
+    n : int
+        Length of the array.
+
+    Returns
+    -------
+    out : ndarray
+        Random permutation of the array.
+    """
+    return np.random.permutation(n) + 1
+
+def randi(range, *size):
+    """
+        Generates random integers based on the given range and size.
+
+        Parameters
+            - range (int or list): Defines the range for generating random integers.
+                - If an integer is provided, random integers are generated between 1 and the given integer (inclusive).
+                - If a list is provided:
+                    - If it has two elements, random integers are generated between the first and second element (inclusive).
+                    - If it has one element, random integers are generated between 1 and the element (inclusive).
+                    - If the list has more than two elements, an error message is displayed.
+            - size (int or tuple of ints): Specifies the number of random integers to generate or the shape of the array to return.
+
+        Returns
+            - np.ndarray: An array of random integers based on the specified range and size.
+            - None: If the input is invalid.
+
+        Raises
+            - Prints error messages if `range` is not an integer or a list with one or two elements.
+    """
+    # checks if range is a list
+    if isinstance(range, list):
+        # checks if it has two elements
+        if len(range) == 2:
+            # returns the random integer
+            return np.random.randint(range[0], range[1] + 1, size)
+        elif len(range) == 1:
+            # returns the random integer
+            return np.random.randint(1, range[0] + 1, size)
+        else:
+            print("Error: range must have one or two elements")
+            return None
+    elif isinstance(range, int):
+        return np.random.randint(1, range + 1, size)
+    else:
+        print("Error: range must be an integer or a list")
+
+def rand(*args, **kwargs):
+    """
+    Random values in a given shape.
+    
+    Create an array of the given shape and populate it with random
+    samples from a uniform distribution over [0, 1).
+
+    Parameters
+        d0, d1, ..., dn : int, optional
+            The dimensions of the returned array, must be non-negative. 
+            If no argument is given a single Python float is returned.
+
+    Returns
+        out : ndarray, shape (d0, d1, ..., dn) Random values.
+    """
+    return np.random.rand(*args, **kwargs)
+
+def normrnd(mu, sigma, *size):
+    return np.random.normal(mu, sigma, size)
