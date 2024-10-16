@@ -174,5 +174,30 @@ V_x  = integral(lambda x: denvf(x, c0), 1, 3)
 print("Mu_x (mean):", Mu_x) # 1.2506
 print("V_x (variance):", V_x) # 0.7344
 
+# ----------------------------- #
+# Example 8: Critical values
+# ----------------------------- #
 
-plt.show()
+alpha = 0.0132
+print(norminv(1 - alpha)) # 2.2203
+print(norminv(1 - alpha / 2)) # 2.4783
+
+alpha = 0.012
+v = 61
+print(tinv(1 - alpha, v)) # 2.3149
+print(tinv(1 - alpha / 2, v)) # 2.5896
+
+alpha = 0.012
+v = 19
+print(chi2inv(1 - alpha, v)) # 35.5444
+print(chi2inv(1 - alpha / 2, v)) # 37.9626
+print(chi2inv(alpha / 2, v)) # 7.0394
+
+alpha = 0.012
+v1 = 9
+v2 = 13
+print(finv(1 - alpha, v1, v2)) # 4.0072
+print(finv(1 - alpha / 2, v1, v2)) # 4.7321
+print(finv(alpha / 2, v1, v2)) # 0.1710
+
+# plt.show()
