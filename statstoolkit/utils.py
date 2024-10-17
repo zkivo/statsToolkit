@@ -838,14 +838,75 @@ def rand(*args, **kwargs):
     samples from a uniform distribution over [0, 1).
 
     Parameters
+
         d0, d1, ..., dn : int, optional
             The dimensions of the returned array, must be non-negative. 
             If no argument is given a single Python float is returned.
 
     Returns
+
         out : ndarray, shape (d0, d1, ..., dn) Random values.
     """
     return np.random.rand(*args, **kwargs)
 
 def normrnd(mu, sigma, *size):
+    """
+        Draw random samples from a normal (Gaussian) distribution.
+
+        The probability density function of the normal distribution, 
+        first derived by De Moivre and 200 years later by both Gauss and 
+        Laplace independently 2, is often called the bell curve because of 
+        its characteristic shape (see the example below).
+
+        The normal distributions occurs often in nature. 
+        For example, it describes the commonly occurring distribution of 
+        samples influenced by a large number of tiny, random disturbances, 
+        each with its own unique distribution 2.
+
+        Parameters
+
+            loc : float or array_like of floats Mean ("centre") of the distribution.
+
+            scale : float or array_like of floats
+                Standard deviation (spread or "width") of the distribution. Must be non-negative.
+
+            size : int or tuple of ints, optional
+                Output shape. If the given shape is, e.g., (m, n, k), 
+                then m * n * k samples are drawn. If size is None (default), 
+                a single value is returned if loc and scale are both scalars. 
+                Otherwise, np.broadcast(loc, scale).size samples are drawn.
+
+        Returns
+
+            out : ndarray or scalar
+            Drawn samples from the parameterized normal distribution.
+        
+    """
     return np.random.normal(mu, sigma, size)
+
+def chi2rnd(nu, *size):
+    """
+        Draw samples from a chi-square distribution.
+
+        When `df` independent random variables, each with standard normal 
+        distributions (mean 0, variance 1), are squared and summed, the 
+        resulting distribution is chi-square (see Notes). This distribution 
+        is often used in hypothesis testing.
+
+        Parameters
+
+            df : int or array_like of ints
+                Number of degrees of freedom, must be > 0.
+
+            size : int or tuple of ints, optional
+                Output shape. If the given shape is, e.g., (m, n, k), 
+                then m * n * k samples are drawn. If size is None (default), 
+                a single value is returned if `df` is a scalar. Otherwise, 
+                np.array(df).size samples are drawn.
+
+        Returns
+
+            out : ndarray or scalar
+                Drawn samples from the parameterized chi-square distribution.
+    """
+    return np.random.chisquare(nu, size)

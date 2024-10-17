@@ -15,6 +15,8 @@ y = normpdf(x, mu, sigma)  # Compute the probability density function
 plt.figure()
 plt.plot(x, y)
 plt.axis([-6, 3, 0, 0.25])  # Set the axis limits
+plt.axhline(0, color='black', linestyle='dashdot', linewidth=0.5)  # x-axis
+plt.axvline(0, color='black', linestyle='dashdot', linewidth=0.5)  # y-axis
 plt.title('PDF of N(-1.5, 2)')
 
 # ----------------------------- #
@@ -204,10 +206,12 @@ print(finv(alpha / 2, v1, v2)) # 0.1710
 # Example 10: Generate random values
 # ----------------------------- #
 
-print(randperm(7))
-print(randi([1, 350], 1, 5))
-print(randi([1, 350], 6))
-print(rand(1,5))
-print(-3+5*rand(1, 6))
+print(randperm(7))              # [2 1 5 4 6 3 7]
+print(randi([1, 350], 1, 5))    # [[  8 292 240 296 196]]
+print(randi([1, 350], 6))       # [ 45  32 131 346 314 300]
+print(rand(1,5))                # [[0.73112933 0.5274633  0.25467238 0.1383535  0.37195866]]
+print(-3+5*rand(1, 6))          # [[-1.21751906  0.53154677  0.38587971  0.87498599  1.5511747   1.6080525 ]]
+print(normrnd(-1, 0.5, 1, 6))   # [[-0.9086999  -0.94865145 -1.18145306 -0.93692477 -0.36856358 -1.25120495]]
+print(chi2rnd(4, 1, 4))         # [[5.04566035 5.48997902 0.86619863 1.36271316]]
 
-# plt.show()
+plt.show()
