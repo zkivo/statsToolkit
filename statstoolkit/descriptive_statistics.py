@@ -1,3 +1,4 @@
+import scipy.stats as stats 
 import math
 
 
@@ -223,4 +224,74 @@ def quantile(X, Q):
         upper_value = sorted_X[upper]
         return lower_value + (upper_value - lower_value) * (pos - lower)
 
+def corrcoef(*args, **kwargs):
+    r"""
+    Pearson correlation coefficient and p-value for testing non-correlation.
 
+    The Pearson correlation coefficient [1]_ measures the linear relationship
+    between two datasets. Like other correlation
+    coefficients, this one varies between -1 and +1 with 0 implying no
+    correlation. Correlations of -1 or +1 imply an exact linear relationship.
+    Positive correlations imply that as x increases, so does y. Negative
+    correlations imply that as x increases, y decreases.
+
+    This function also performs a test of the null hypothesis that the
+    distributions underlying the samples are uncorrelated and normally
+    distributed. (See Kowalski [3]_
+    for a discussion of the effects of non-normality of the input on the
+    distribution of the correlation coefficient.)
+    The p-value roughly indicates the probability of an uncorrelated system
+    producing datasets that have a Pearson correlation at least as extreme
+    as the one computed from these datasets.
+
+    Parameters
+    ----------
+    x : (N,) array_like
+        Input array.
+    y : (N,) array_like
+        Input array.
+    alternative : {'two-sided', 'greater', 'less'}, optional
+        Defines the alternative hypothesis. Default is 'two-sided'.
+        The following options are available:
+
+        * 'two-sided': the correlation is nonzero
+        * 'less': the correlation is negative (less than zero)
+        * 'greater':  the correlation is positive (greater than zero)
+
+        .. versionadded:: 1.9.0
+    method : ResamplingMethod, optional
+        Defines the method used to compute the p-value. If `method` is an
+        instance of `PermutationMethod`/`MonteCarloMethod`, the p-value is
+        computed using
+        `scipy.stats.permutation_test`/`scipy.stats.monte_carlo_test` with the
+        provided configuration options and other appropriate settings.
+        Otherwise, the p-value is computed as documented in the notes.
+
+        .. versionadded:: 1.11.0
+
+    Returns
+    -------
+    result : `~scipy.stats._result_classes.PearsonRResult`
+        An object with the following attributes:
+
+        statistic : float
+            Pearson product-moment correlation coefficient.
+        pvalue : float
+            The p-value associated with the chosen alternative.
+
+        The object has the following method:
+
+        confidence_interval(confidence_level, method)
+            This computes the confidence interval of the correlation
+            coefficient `statistic` for the given confidence level.
+            The confidence interval is returned in a ``namedtuple`` with
+            fields `low` and `high`. If `method` is not provided, the
+            confidence interval is computed using the Fisher transformation
+            [1]_. If `method` is an instance of `BootstrapMethod`, the
+            confidence interval is computed using `scipy.stats.bootstrap` with
+            the provided configuration options and other appropriate settings.
+            In some cases, confidence limits may be NaN due to a degenerate
+            resample, and this is typical for very small samples (~6
+            observations).
+    """
+    return stats.pearsonr(*args, **kwargs)

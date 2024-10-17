@@ -1,5 +1,6 @@
-from statstoolkit.visualization import bar_chart, pie_chart, histogram, boxplot, scatterplot
-from statstoolkit.visualization import scatterplot_3d  # Import the true 3D scatter plot
+from statstoolkit.descriptive_statistics import *
+from statstoolkit.visualization import *
+import numpy as np
 
 # 1. Display Bar Chart
 categories = ['Category A', 'Category B', 'Category C']
@@ -28,3 +29,10 @@ scatterplot(x, y, title="Example 2D Scatter Plot", xlabel="X-Axis", ylabel="Y-Ax
 # 6. Display True 3D Scatter Plot
 z = [50, 100, 200, 300]
 scatterplot_3d(x, y, z, symbol="o", title="Example 3D Scatter Plot", xlabel="X-Axis", ylabel="Y-Axis", zlabel="Z-Axis", color="blue")
+
+# 7. Display Linear Correlation (Pearson correlation)
+a = np.array([1,       0,  -1,    3,    5, -2, 0.5])
+b = np.array([-1,      2,   4, -0.5,    1,  1,   0])
+c = np.array([-0.4,  1.2,   0,    3,  2.5, -1,   6])
+
+print(corrcoef(a, b))
