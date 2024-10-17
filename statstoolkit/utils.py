@@ -1,5 +1,32 @@
 from scipy.integrate import quad, dblquad
 import numpy as np
+import pandas as pd
+
+
+def readmatrix(filename, range_str=None):
+    """
+    Read a specific range of cells from an Excel file into a matrix (DataFrame).
+
+    Parameters
+    ----------
+    filename : str
+        The name of the Excel file (e.g., 'name.xlsx').
+    range_str : str, optional
+        The cell range in Excel notation (e.g., 'A1:E5').
+
+    Returns
+    -------
+    DataFrame
+        A pandas DataFrame containing the data from the specified range.
+
+    Examples
+    --------
+    >>> readmatrix('data.xlsx', 'A1:E5')
+    """
+    # Use pandas to read the specific range
+    data = pd.read_excel(filename, usecols=range_str, header=None)
+    return data
+
 
 
 def linspace(*args, **kwargs):
@@ -234,6 +261,7 @@ def meshgrid(*args, **kwargs):
     >>> plt.show()
     """
     return np.meshgrid(*args, **kwargs)
+
 
 def integral(*args, **kwargs):
     """
@@ -777,6 +805,7 @@ def integral2(*args, **kwargs):
     i, _ = dblquad(*args, **kwargs)
     return i
 
+
 def randperm(n):
     """
     Return a random permutation of an array.
@@ -792,6 +821,7 @@ def randperm(n):
         Random permutation of the array.
     """
     return np.random.permutation(n) + 1
+
 
 def randi(range, *size):
     """
@@ -849,6 +879,7 @@ def rand(*args, **kwargs):
     """
     return np.random.rand(*args, **kwargs)
 
+
 def normrnd(mu, sigma, *size):
     """
         Draw random samples from a normal (Gaussian) distribution.
@@ -883,6 +914,7 @@ def normrnd(mu, sigma, *size):
         
     """
     return np.random.normal(mu, sigma, size)
+
 
 def chi2rnd(nu, *size):
     """

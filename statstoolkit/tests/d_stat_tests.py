@@ -1,5 +1,5 @@
 import unittest
-from statstoolkit.descriptive_statistics import mean, median, range_, var, std, quantile
+from statstoolkit.statistics import mean, median, range_, var, std, quantile
 
 
 class TestStatFunctions(unittest.TestCase):

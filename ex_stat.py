@@ -1,4 +1,4 @@
-from statstoolkit.descriptive_statistics import *
+from statstoolkit.statistics import *
 from statstoolkit.visualization import *
 import numpy as np
 
