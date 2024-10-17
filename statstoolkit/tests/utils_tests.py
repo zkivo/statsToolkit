@@ -1,8 +1,10 @@
 import unittest
 import pandas as pd
 import os
+import numpy as np
 from pandas.testing import assert_frame_equal
-from ..utils import readmatrix  # Import the function to be tested
+from numpy.testing import assert_array_equal
+from ..utils import readmatrix, linspace, meshgrid, integral, integral2, randperm, randi, rand, normrnd, chi2rnd
 
 
 class TestReadMatrix(unittest.TestCase):
@@ -66,6 +68,80 @@ class TestReadMatrix(unittest.TestCase):
         """
         if os.path.exists(self.test_file):
             os.remove(self.test_file)
+
+
+class TestUtilsFunctions(unittest.TestCase):
+
+    def test_linspace(self):
+        """Test linspace function"""
+        result = linspace(0, 10, 5)
+        expected = np.array([0., 2.5, 5., 7.5, 10.])
+        assert_array_equal(result, expected)
+
+    def test_meshgrid(self):
+        """Test meshgrid function"""
+        x = np.array([1, 2, 3])
+        y = np.array([4, 5])
+        xv, yv = meshgrid(x, y)
+        expected_xv = np.array([[1, 2, 3], [1, 2, 3]])
+        expected_yv = np.array([[4, 4, 4], [5, 5, 5]])
+        assert_array_equal(xv, expected_xv)
+        assert_array_equal(yv, expected_yv)
+
+    def test_integral(self):
+        """Test integral function for single integrals"""
+        f = lambda x: x**2
+        result = integral(f, 0, 1)
+        expected = 1 / 3
+        self.assertAlmostEqual(result, expected)
+
+    def test_integral2(self):
+        """Test integral2 function for double integrals"""
+        f = lambda y, x: x * y ** 2
+        result = integral2(f, 0, 2, 0, 1)
+        expected = 2 / 3
+        self.assertAlmostEqual(result, expected)
+
+    def test_randperm(self):
+        """Test randperm function"""
+        n = 5
+        result = randperm(n)
+        self.assertEqual(len(result), n)
+        self.assertTrue(np.array_equal(np.sort(result), np.arange(1, n + 1)))
+
+    def test_randi(self):
+        """Test randi function"""
+        result = randi(10, 5)
+        self.assertEqual(result.shape[0], 5)
+        self.assertTrue(np.all(result >= 1))
+        self.assertTrue(np.all(result <= 10))
+
+        result = randi([1, 5], 10)
+        self.assertTrue(np.all(result >= 1))
+        self.assertTrue(np.all(result <= 5))
+
+    def test_rand(self):
+        """Test rand function"""
+        result = rand(3, 2)
+        self.assertEqual(result.shape, (3, 2))
+        self.assertTrue(np.all(result >= 0))
+        self.assertTrue(np.all(result < 1))
+
+    def test_normrnd(self):
+        """Test normrnd function"""
+        mu, sigma = 0, 1
+        result = normrnd(mu, sigma, 100)
+        self.assertEqual(result.shape[0], 100)
+        self.assertAlmostEqual(np.mean(result), mu, delta=0.1)
+        self.assertAlmostEqual(np.std(result), sigma, delta=0.1)
+
+    def test_chi2rnd(self):
+        """Test chi2rnd function"""
+        nu = 3
+        result = chi2rnd(nu, 100)
+        self.assertEqual(result.shape[0], 100)
+        self.assertTrue(np.all(result >= 0))
+        self.assertAlmostEqual(np.mean(result), nu, delta=0.5)
 
 
 if __name__ == '__main__':
