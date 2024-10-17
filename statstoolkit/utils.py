@@ -963,3 +963,95 @@ def chi2rnd(nu, *size):
                 Drawn samples from the parameterized chi-square distribution.
     """
     return np.random.chisquare(nu, size)
+
+
+def rmmissing(X):
+    """
+    Remove rows with at least one missing value from the data.
+
+    Parameters
+    ----------
+    X : pandas.DataFrame or numpy.ndarray
+        A dataset where rows with missing values (NaN) will be removed.
+
+    Returns
+    -------
+    pandas.DataFrame or numpy.ndarray
+        The dataset with rows containing missing values removed.
+
+    Examples
+    --------
+    >>> X = pd.DataFrame([[1, 2], [3, np.nan], [5, 6]])
+    >>> rmmissing(X)
+       0  1
+    0  1  2
+    2  5  6
+    """
+    if isinstance(X, pd.DataFrame):
+        return X.dropna()
+    elif isinstance(X, np.ndarray):
+        return X[~np.isnan(X).any(axis=1)]
+    else:
+        raise TypeError("Input should be a pandas DataFrame or numpy ndarray.")
+
+
+def nanmean(X):
+    """
+    Calculate the mean of each column, ignoring NaN values.
+
+    Parameters
+    ----------
+    X : pandas.DataFrame or numpy.ndarray
+        A dataset where the mean is computed for each column, ignoring NaN values.
+
+    Returns
+    -------
+    numpy.ndarray
+        The mean of each column, ignoring NaN values.
+
+    Examples
+    --------
+    >>> X = pd.DataFrame([[1, 2], [3, np.nan], [5, 6]])
+    >>> nanmean(X)
+    array([3. , 4. ])
+    """
+    if isinstance(X, pd.DataFrame):
+        return X.mean(skipna=True).to_numpy()
+    elif isinstance(X, np.ndarray):
+        return np.nanmean(X, axis=0)
+    else:
+        raise TypeError("Input should be a pandas DataFrame or numpy ndarray.")
+
+
+def fillmissing_with_mean(X):
+    """
+    Replace missing data in each column with the column mean.
+
+    Parameters
+    ----------
+    X : pandas.DataFrame or numpy.ndarray
+        A dataset where missing values (NaN) will be replaced by the column mean.
+
+    Returns
+    -------
+    pandas.DataFrame or numpy.ndarray
+        The dataset with missing values replaced by the column mean.
+
+    Examples
+    --------
+    >>> X = pd.DataFrame([[1, 2], [3, np.nan], [5, 6]])
+    >>> fillmissing_with_mean(X)
+         0    1
+    0  1.0  2.0
+    1  3.0  4.0
+    2  5.0  6.0
+    """
+    if isinstance(X, pd.DataFrame):
+        return X.apply(lambda col: col.fillna(col.mean()))
+    elif isinstance(X, np.ndarray):
+        col_means = np.nanmean(X, axis=0)
+        inds = np.where(np.isnan(X))
+        X[inds] = np.take(col_means, inds[1])
+        return X
+    else:
+        raise TypeError("Input should be a pandas DataFrame or numpy ndarray.")
