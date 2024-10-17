@@ -23,21 +23,21 @@ class TestReadMatrix(unittest.TestCase):
         })
 
         # Save the DataFrame to an Excel file
-        self.data.to_excel(self.test_file, index=False)
+        self.data.to_excel(self.test_file, index=False, header=False)
 
     def test_read_specific_range(self):
         """
         Test reading a specific range (A1:E5) from the Excel file.
         """
         expected_output = pd.DataFrame({
-            'A': [1, 2, 3, 4, 5],
-            'B': [6, 7, 8, 9, 10],
-            'C': [11, 12, 13, 14, 15],
-            'D': [16, 17, 18, 19, 20],
-            'E': [21, 22, 23, 24, 25]
+            0: [1, 2, 3, 4, 5],
+            1: [6, 7, 8, 9, 10],
+            2: [11, 12, 13, 14, 15],
+            3: [16, 17, 18, 19, 20],
+            4: [21, 22, 23, 24, 25]
         })
 
-        result = readmatrix(self.test_file, 'A:E')
+        result = readmatrix(self.test_file, 'A1:E5')
         assert_frame_equal(result, expected_output)
 
     def test_read_partial_range(self):
@@ -45,9 +45,9 @@ class TestReadMatrix(unittest.TestCase):
         Test reading a smaller range (A2:C4) from the Excel file.
         """
         expected_output = pd.DataFrame({
-            'A': [2, 3, 4],
-            'B': [7, 8, 9],
-            'C': [12, 13, 14]
+            0: [2, 3, 4],
+            1: [7, 8, 9],
+            2: [12, 13, 14]
         }, index=[1, 2, 3])  # Adjust index to match DataFrame structure
 
         result = readmatrix(self.test_file, 'A2:C4')

@@ -1,18 +1,19 @@
 from scipy.integrate import quad, dblquad
 import numpy as np
 import pandas as pd
+import re
 
 
 def readmatrix(filename, range_str=None):
     """
-    Read a specific range of cells from an Excel file into a matrix (DataFrame).
+    Read a specific range of cells or columns from an Excel file into a matrix (DataFrame).
 
     Parameters
     ----------
     filename : str
         The name of the Excel file (e.g., 'name.xlsx').
     range_str : str, optional
-        The cell range in Excel notation (e.g., 'A1:E5').
+        The cell range in Excel notation (e.g., 'A1:E5') or column range (e.g., 'A:E').
 
     Returns
     -------
@@ -22,11 +23,31 @@ def readmatrix(filename, range_str=None):
     Examples
     --------
     >>> readmatrix('data.xlsx', 'A1:E5')
+    >>> readmatrix('data.xlsx', 'A:E')
     """
-    # Use pandas to read the specific range
-    data = pd.read_excel(filename, usecols=range_str, header=None)
-    return data
+    if range_str is None:
+        return pd.read_excel(filename, header=None)
 
+    # Check if the range_str is a full cell range (e.g., A1:E5)
+    match = re.match(r'([A-Z]+)(\d+):([A-Z]+)(\d+)', range_str)
+
+    if match:
+        start_col, start_row, end_col, end_row = match.groups()
+        cols = f"{start_col}:{end_col}"
+        data = pd.read_excel(filename, usecols=cols, header=None)
+        start_row_idx = int(start_row) - 1
+        end_row_idx = int(end_row)
+        return data.iloc[start_row_idx:end_row_idx]
+
+    # Check if the range_str is a column-only range (e.g., A:E)
+    match = re.match(r'([A-Z]+):([A-Z]+)', range_str)
+
+    if match:
+        start_col, end_col = match.groups()
+        cols = f"{start_col}:{end_col}"
+        return pd.read_excel(filename, usecols=cols, header=None)
+
+    raise ValueError(f"Invalid range format: {range_str}")
 
 
 def linspace(*args, **kwargs):
