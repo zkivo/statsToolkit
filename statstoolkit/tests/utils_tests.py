@@ -7,6 +7,7 @@ from numpy.testing import assert_array_equal
 from ..utils import readmatrix, linspace, meshgrid, integral, integral2, randperm, randi, rand, normrnd, chi2rnd
 from ..utils import rmmissing, nanmean, fillmissing_with_mean
 
+
 class TestReadMatrix(unittest.TestCase):
 
     def setUp(self):
