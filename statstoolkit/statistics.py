@@ -1,5 +1,9 @@
 import scipy.stats as stats 
 import math
+import pandas as pd
+import numpy as np
+from numpy.linalg import inv, LinAlgError
+import pingouin as pg
 
 
 def mean(X):
@@ -172,31 +176,32 @@ def std(X, ddof=0):
     return math.sqrt(var(X, ddof=ddof))
 
 
-def quantile(X, Q):
+def quantile(data, q):
     """
-    Calculate the quantile of a list of numbers.
+    Calculate the q-th quantile of the data.
 
-    A quantile is a value below which a given percentage of the data falls.
-    For example, the 0.25 quantile is the first quartile (25th percentile).
+    Quantiles are points in a dataset that divide the data into intervals with
+    equal probabilities. For example, the 0.5 quantile is the median, the 0.25
+    quantile is the first quartile, and the 0.75 quantile is the third quartile.
 
     Parameters
     ----------
-    X : list or array-like
-        A list of numerical values.
-    Q : float
-        The quantile to compute, a number between 0 and 1.
+    data : list or array-like
+        A list of numerical values. The input list must not be empty.
+    q : float
+        Quantile to compute, which must be between 0 and 1 inclusive.
+        0 corresponds to the minimum, 0.5 corresponds to the median,
+        and 1 corresponds to the maximum.
 
     Returns
     -------
     float
-        The Q-th quantile of the input values.
+        The q-th quantile of the data.
 
     Raises
     ------
     ValueError
-        If the input list is empty.
-    ValueError
-        If Q is not between 0 and 1.
+        If `data` is an empty list or if `q` is not between 0 and 1.
 
     Examples
     --------
@@ -206,23 +211,40 @@ def quantile(X, Q):
     3.0
     >>> quantile([1, 2, 3, 4, 5], 0.75)
     4.0
+
+    Notes
+    -----
+    The quantile is calculated by first sorting the data, then finding
+    the weighted interpolation between the two data points that correspond
+    to the quantile index.
+
+    If `q` is 0, the function returns the minimum value of the data.
+    If `q` is 1, the function returns the maximum value of the data.
+
+    This function supports interpolation when `q` does not exactly correspond
+    to a data point index. The result will be a float value regardless of
+    whether the input data contains integers.
     """
-    if len(X) == 0:
-        raise ValueError("The input list cannot be empty.")
-    if not 0 <= Q <= 1:
-        raise ValueError("Q must be between 0 and 1.")
+    if len(data) == 0:
+        raise ValueError("Data cannot be empty")
 
-    sorted_X = sorted(X)
-    pos = (len(X) - 1) * Q
-    lower = math.floor(pos)
-    upper = math.ceil(pos)
+    if not 0 <= q <= 1:
+        raise ValueError("Quantile must be between 0 and 1")
 
-    if lower == upper:
-        return sorted_X[int(pos)]
+    sorted_data = sorted(data)
+    idx = (len(sorted_data) - 1) * q
+    lower = int(idx)
+    upper = lower + 1
+    weight = idx - lower
+
+    # If upper index is within bounds, interpolate between lower and upper
+    if upper < len(sorted_data):
+        result = sorted_data[lower] * (1 - weight) + sorted_data[upper] * weight
     else:
-        lower_value = sorted_X[lower]
-        upper_value = sorted_X[upper]
-        return lower_value + (upper_value - lower_value) * (pos - lower)
+        result = sorted_data[lower]
+
+    return float(result)  # Return as float to ensure consistent output type
+
 
 def corrcoef(*args, **kwargs):
     r"""
@@ -295,3 +317,32 @@ def corrcoef(*args, **kwargs):
             observations).
     """
     return stats.pearsonr(*args, **kwargs)
+
+
+def partialcorr(X, columns=None):
+    """
+    Wrapper for the pingouin partial_corr function to compute partial correlation matrix.
+
+    Parameters
+    ----------
+    X : array-like or DataFrame
+        A (n_samples, n_features) array or DataFrame with n_samples observations and n_features variables.
+    columns : list of str, optional
+        Column names for the DataFrame. If not provided, integers will be used as column names.
+
+    Returns
+    -------
+    partial_corr_matrix : DataFrame
+        Partial correlation matrix for the given variables.
+    """
+    if isinstance(X, pd.DataFrame):
+        data = X
+    else:
+        if columns is None:
+            columns = [f'var{i}' for i in range(X.shape[1])]
+        data = pd.DataFrame(X, columns=columns)
+
+    # Compute the partial correlation for each pair of variables using pingouin
+    partial_corr_matrix = data.pcorr()
+
+    return partial_corr_matrix
