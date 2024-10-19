@@ -36,3 +36,10 @@ b = np.array([-1,      2,   4, -0.5,    1,  1,   0])
 c = np.array([-0.4,  1.2,   0,    3,  2.5, -1,   6])
 
 print(corrcoef(a, b))
+
+# Display Covariance
+
+abc = np.stack((a, b, c), axis=1)
+
+print(cov(a, b))
+print(cov(abc))

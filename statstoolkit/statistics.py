@@ -316,7 +316,46 @@ def corrcoef(*args, **kwargs):
             resample, and this is typical for very small samples (~6
             observations).
     """
-    return stats.pearsonr(*args, **kwargs)
+
+    def correlation_p_values(corr_matrix, n):
+        p_matrix = np.zeros(corr_matrix.shape)
+
+        for i in range(corr_matrix.shape[0]):
+            for j in range(corr_matrix.shape[1]):
+                if i != j:
+                    r = corr_matrix[i, j]
+                    t_stat = r * np.sqrt((n - 2) / (1 - r**2))
+                    p_value = 2 * (1 - stats.t.cdf(abs(t_stat), df=n-2))
+                    p_matrix[i, j] = p_value
+                else:
+                    p_matrix[i, j] = 1  # No p-value for diagonal elements (correlation with self)
+        
+        return p_matrix
+
+    R = np.corrcoef(*args, **kwargs, rowvar=False)
+    P = correlation_p_values(R, len(args[0]))
+    return (R, P)
+
+def cov(*args, **kwargs):
+    """
+    Estimate a covariance matrix, given data and weights.
+
+    Parameters
+    ----------
+    
+        m : array_like
+            A 1-D or 2-D array containing multiple variables and observations. Each row of `m` represents a
+            variable, and each column a single observation of all those variables. Also see `rowvar` below.
+        y : array_like, optional
+            An additional set of variables and observations. `y` has the same form as that of `m`.
+    
+    Returns
+    -------
+    
+        out : ndarray
+            The covariance matrix of the variables. 
+    """
+    return np.cov(*args, **kwargs, rowvar=False)
 
 
 def partialcorr(X, columns=None):
