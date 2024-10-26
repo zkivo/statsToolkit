@@ -385,3 +385,41 @@ def partialcorr(X, columns=None):
     partial_corr_matrix = data.pcorr()
 
     return partial_corr_matrix
+
+
+def covariance(data1, data2=None):
+    """
+    Calculate the covariance matrix for one or two sets of data.
+
+    Parameters
+    ----------
+    data1 : array_like
+        A 1D or 2D array representing the first set of data.
+    data2 : array_like, optional
+        A 1D array representing the second set of data. If provided, both `data1` and `data2`
+        must have the same length.
+
+    Returns
+    -------
+    cov_matrix : ndarray
+        The covariance matrix.
+
+    Raises
+    ------
+    ValueError
+        If the input is empty or if `data1` and `data2` have mismatched lengths.
+    """
+    if data2 is None:
+        data = np.asarray(data1)
+        if data.size == 0:
+            raise ValueError("Input data cannot be empty.")
+        if data.ndim == 1:
+            data = data[:, np.newaxis]
+    else:
+        data1 = np.asarray(data1)
+        data2 = np.asarray(data2)
+        if len(data1) != len(data2):
+            raise ValueError("Input arrays must have the same length.")
+        data = np.column_stack((data1, data2))
+
+    return np.cov(data, rowvar=False)

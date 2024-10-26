@@ -1,5 +1,5 @@
 import unittest
-from statstoolkit.statistics import mean, median, range_, var, std, quantile
+from statstoolkit.statistics import mean, median, range_, var, std, quantile, covariance
 from statstoolkit.statistics import partialcorr
 import numpy as np
 
@@ -89,6 +89,44 @@ class TestStatFunctions(unittest.TestCase):
         # Adjusted expected value
         expected = np.array([[1.0, -1.0, 0.89], [-1.0, 1.0, 0.89], [0.89, 0.89, 1.0]])
         np.testing.assert_array_almost_equal(result.to_numpy(), expected, decimal=2)
+
+
+    def test_covariance_two_vectors(self):
+        a = [1, 0, -1, 3, 5, -2, 0.5]
+        b = [-1, 2, 4, -0.5, 1, 1, 0]
+        result = covariance(a, b)
+        expected = np.array([[5.7024, -1.5893],
+                             [-1.5893, 2.8690]])
+        np.testing.assert_array_almost_equal(result, expected, decimal=4)
+
+    def test_covariance_matrix(self):
+        a = [1, 0, -1, 3, 5, -2, 0.5]
+        b = [-1, 2, 4, -0.5, 1, 1, 0]
+        c = [-0.4, 1.2, 0, 3, 2.5, -1, 6]
+        X = np.array([a, b, c]).T
+        result = covariance(X)
+        expected = np.array([
+            [5.7024, -1.5893, 2.6012],
+            [-1.5893, 2.8690, -1.2821],
+            [2.6012, -1.2821, 5.9348]
+        ])
+        np.testing.assert_array_almost_equal(result, expected, decimal=4)
+
+    def test_covariance_single_vector(self):
+        a = [1, 0, -1, 3, 5, -2, 0.5]
+        result = covariance(a)
+        expected = np.array([[np.var(a, ddof=1)]])  # Expecting a 2D array for consistency
+        np.testing.assert_array_almost_equal(result, expected, decimal=4)
+
+    def test_covariance_mismatched_lengths(self):
+        a = [1, 0, -1]
+        b = [1, 2]
+        with self.assertRaises(ValueError):
+            covariance(a, b)
+
+    def test_covariance_empty_input(self):
+        with self.assertRaises(ValueError):
+            covariance([])
 
 
 if __name__ == '__main__':
