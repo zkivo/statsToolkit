@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 
 
 def bar_chart(x, y, title=None, xlabel=None, ylabel=None, color=None, figsize=(10, 6), **kwargs):
@@ -239,4 +240,39 @@ def scatterplot_3d(x, y, z, symbol='o', title=None, xlabel=None, ylabel=None, zl
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
+    plt.show()
+
+
+def plot_regression_surface(x1, x2, y, b):
+    """
+    Generate a 3D scatter plot with regression plane.
+
+    Parameters:
+    x1 : array-like
+        Predictor variable 1 (e.g., weight).
+    x2 : array-like
+        Predictor variable 2 (e.g., horsepower).
+    y : array-like
+        Response variable (e.g., MPG).
+    b : array
+        Coefficients from the regression.
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(x1, x2, y, color='b', s=50)
+
+    # Generate the grid for the regression plane
+    x1fit = np.linspace(min(x1), max(x1), 20)
+    x2fit = np.linspace(min(x2), max(x2), 20)
+    X1FIT, X2FIT = np.meshgrid(x1fit, x2fit)
+    YFIT = b[0] + b[1] * X1FIT + b[2] * X2FIT + b[3] * X1FIT * X2FIT
+
+    # Plot the surface
+    ax.plot_surface(X1FIT, X2FIT, YFIT, color='c', alpha=0.5, edgecolor='none')
+
+    # Labels and view
+    ax.set_xlabel('Weight')
+    ax.set_ylabel('Horsepower')
+    ax.set_zlabel('MPG')
+    ax.view_init(elev=10, azim=50)
     plt.show()

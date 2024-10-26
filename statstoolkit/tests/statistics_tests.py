@@ -1,5 +1,5 @@
 import unittest
-from statstoolkit.statistics import mean, median, range_, var, std, quantile, fitlm, cov
+from statstoolkit.statistics import mean, median, range_, var, std, quantile, fitlm, cov, regress
 from statstoolkit.statistics import partialcorr
 import numpy as np
 
@@ -187,6 +187,100 @@ class TestStatFunctions(unittest.TestCase):
     def test_cov_empty_input(self):
         with self.assertRaises(ValueError):
             cov([])
+
+
+    def test_regress_single_predictor(self):
+        """Test regression with a single predictor variable."""
+        y = np.array([1, 2, 3, 4, 5])
+        X = np.column_stack((np.ones(len(y)), [1, 2, 3, 4, 5]))
+
+        # Expected values
+        expected_b = [0, 1]
+        expected_r_squared = 1.0  # Perfect fit
+
+        # Run regression
+        b, bint, r, rint, stats = regress(y, X)
+
+        # Coefficient tests
+        np.testing.assert_almost_equal(b, expected_b, decimal=3)
+
+        # R-squared test
+        self.assertAlmostEqual(stats["R-squared"], expected_r_squared, places=3)
+
+    def test_regress_confidence_intervals(self):
+        """Test that confidence intervals have the correct structure and are reasonable."""
+        y = np.array([1, 2, 3, 4, 5])
+        X = np.column_stack((np.ones(len(y)), [1, 2, 3, 4, 5]))
+
+        # Run regression
+        _, bint, _, _, _ = regress(y, X)
+
+        # Check the shape and bounds
+        self.assertEqual(bint.shape, (2, 2))  # Intercept and slope, each with lower and upper bounds
+        self.assertLess(bint[0, 0], bint[0, 1])  # Lower bound < upper bound for intercept
+        self.assertLess(bint[1, 0], bint[1, 1])  # Lower bound < upper bound for slope
+
+    def test_regress_basic(self):
+        """Test a basic linear regression with two predictors."""
+        # Sample data
+        y = np.array([5, 7, 9, 11, 13])
+        X = np.column_stack((np.ones(len(y)), [1, 2, 3, 4, 5], [2, 4, 6, 8, 10]))
+
+        # Updated expected values
+        expected_b = [3.0, 0.4, 0.8]
+
+        # Run regression
+        b, bint, r, rint, stats = regress(y, X)
+
+        # Coefficient tests
+        np.testing.assert_almost_equal(b, expected_b, decimal=3)
+
+    def test_regress_with_outliers(self):
+        """Test regression when data contains an outlier."""
+        y = np.array([1, 2, 3, 4, 50])  # Outlier in the response variable
+        X = np.column_stack((np.ones(len(y)), [1, 2, 3, 4, 5]))
+
+        # Run regression
+        _, _, r, rint, _ = regress(y, X)
+
+        # Check if residual interval identifies outlier
+        # Outlier point should have residual outside the rint interval
+        self.assertTrue(np.any(r > rint[:, 1]) or np.any(r < rint[:, 0]))
+
+
+    def test_regress_no_variance_in_x(self):
+        """Test for zero variance in predictors (should raise an error)."""
+        y = np.array([1, 2, 3, 4, 5])
+        X = np.column_stack((np.ones(len(y)), [1, 1, 1, 1, 1]))  # No variance in predictor
+
+        with self.assertRaises(ValueError):
+            regress(y, X)
+
+    def test_regress_no_variance_in_y(self):
+        """Test for zero variance in response (should raise an error)."""
+        y = np.array([5, 5, 5, 5, 5])  # No variance in response
+        X = np.column_stack((np.ones(len(y)), [1, 2, 3, 4, 5]))
+
+        with self.assertRaises(ValueError):
+            regress(y, X)
+
+    def test_regress_high_confidence_level(self):
+        """Test regression with a high confidence level (e.g., 99%)."""
+        y = np.array([1, 2, 3, 4, 5])
+        X = np.column_stack((np.ones(len(y)), [1, 2, 3, 4, 5]))
+
+        _, bint, _, _, _ = regress(y, X, alpha=0.01)  # 99% confidence intervals
+
+        # Check if the confidence intervals are wider than the default (95%)
+        self.assertGreater(bint[0, 1] - bint[0, 0], bint[1, 1] - bint[1, 0])
+
+    def test_regress_insufficient_data(self):
+        """Test if function raises an error for insufficient data."""
+        y = np.array([5])  # Only one data point
+        X = np.array([[1, 2]])  # Only one predictor
+
+        with self.assertRaises(ValueError):
+            regress(y, X)
 
 if __name__ == '__main__':
     unittest.main()

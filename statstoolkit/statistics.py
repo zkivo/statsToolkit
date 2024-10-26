@@ -5,6 +5,8 @@ import numpy as np
 import statsmodels.api as sm
 from numpy.linalg import inv, LinAlgError
 import pingouin as pg
+from statsmodels.stats.outliers_influence import summary_table
+
 
 
 def mean(X):
@@ -458,3 +460,73 @@ def fitlm(x, y):
     }
 
     return summary
+
+
+def regress(y, X, alpha=0.05):
+    """
+    Perform multiple linear regression similar to MATLAB's regress function.
+
+    Parameters:
+    y : array-like
+        Response variable.
+    X : array-like
+        Predictor matrix including an intercept column.
+    alpha : float, optional
+        Significance level for confidence intervals. Default is 0.05.
+
+    Returns:
+    b : array
+        Coefficients of the linear regression.
+    bint : array
+        Confidence intervals for the coefficients.
+    r : array
+        Residuals of the regression.
+    rint : array
+        Intervals for residuals (outlier diagnosis).
+    stats : dict
+        Dictionary containing R-squared, F-statistic, p-value, and error variance.
+    """
+    # Ensure the predictor matrix X includes an intercept column (all ones)
+    if not np.all(X[:, 0] == 1):
+        raise ValueError("The first column of X must be ones for intercept.")
+
+    # Remove rows with NaN values in y or X
+    mask = ~np.isnan(y) & ~np.isnan(X).any(axis=1)
+    y_clean = y[mask]
+    X_clean = X[mask, :]
+
+    # Check for insufficient data
+    if X_clean.shape[0] <= X_clean.shape[1]:
+        raise ValueError("Insufficient data points for regression analysis.")
+
+    # Check for variance in predictors
+    if np.all(np.var(X_clean[:, 1:], axis=0) == 0):  # Ignore intercept column
+        raise ValueError("Predictor matrix X has no variance in some columns.")
+
+    # Check for variance in response
+    if np.var(y_clean) == 0:
+        raise ValueError("Response variable y has no variance.")
+
+    # Fit the model
+    model = sm.OLS(y_clean, X_clean).fit()
+
+    # Extract coefficients and confidence intervals
+    b = model.params
+    bint = model.conf_int(alpha=alpha)
+
+    # Compute residuals
+    r = model.resid
+    st, data, ss2 = summary_table(model, alpha=alpha)
+    rint = data[:, [4, 5]]  # The lower and upper bounds for residuals
+
+    # Compute additional statistics
+    stats = {
+        "R-squared": model.rsquared,
+        "F-statistic": model.fvalue,
+        "p-value": model.f_pvalue,
+        "Error variance": model.mse_resid
+    }
+
+    return b, bint, r, rint, stats
+
+
