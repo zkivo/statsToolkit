@@ -1,5 +1,5 @@
 import unittest
-from statstoolkit.statistics import mean, median, range_, var, std, quantile, covariance
+from statstoolkit.statistics import mean, median, range_, var, std, quantile, covariance, fitlm
 from statstoolkit.statistics import partialcorr
 import numpy as np
 
@@ -57,8 +57,6 @@ class TestStatFunctions(unittest.TestCase):
         """Test partial correlation with two variables."""
         data = np.array([[1, 2], [2, 4], [3, 6], [4, 8]])  # Two perfectly collinear variables
         result = partialcorr(data)
-        print("Computed partial correlation (two variables):\n", result)
-        # Updated expectation: perfect negative correlation due to collinearity
         expected = np.array([[1.0, -1.0], [-1.0, 1.0]])  # Correcting the expectation
         np.testing.assert_array_almost_equal(result.to_numpy(), expected, decimal=3)
 
@@ -71,8 +69,6 @@ class TestStatFunctions(unittest.TestCase):
             [4, 5, 4]
         ])
         result = partialcorr(data)
-        print("Computed partial correlation (three variables):\n", result)
-        # Updated expectation based on the new computation
         expected = np.array([[1.0, -1.0, -1.0], [-1.0, 1.0, -1.0], [-1.0, -1.0, 1.0]])
         np.testing.assert_array_almost_equal(result.to_numpy(), expected, decimal=2)
 
@@ -85,8 +81,6 @@ class TestStatFunctions(unittest.TestCase):
             [4, 5, 2]
         ])
         result = partialcorr(data)
-        print("Computed partial correlation (with controlled variable):\n", result)
-        # Adjusted expected value
         expected = np.array([[1.0, -1.0, 0.89], [-1.0, 1.0, 0.89], [0.89, 0.89, 1.0]])
         np.testing.assert_array_almost_equal(result.to_numpy(), expected, decimal=2)
 
@@ -128,6 +122,72 @@ class TestStatFunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             covariance([])
 
+    def test_basic_linear_regression(self):
+        """Test basic linear regression with a simple case."""
+        x = [1, 2, 3, 4, 5, 6, 7]
+        y = [1.5, 3, 4.5, 6, 7.5, 9, 10.5]
+        result = fitlm(x, y)
+        expected_intercept = 0.0
+        expected_slope = 1.5
+        np.testing.assert_almost_equal(result["Coefficients"].loc["Intercept", "Estimate"], expected_intercept, decimal=3)
+        np.testing.assert_almost_equal(result["Coefficients"].iloc[1]["Estimate"], expected_slope, decimal=3)
+
+    def test_insufficient_data(self):
+        """Test regression with fewer than 2 data points to ensure it raises ValueError."""
+        x = [1]
+        y = [2]
+        with self.assertRaises(ValueError):
+            fitlm(x, y)
+
+    def test_zero_variance_in_x(self):
+        """Test regression with zero variance in x to ensure it raises ValueError."""
+        x = [2, 2, 2, 2, 2]
+        y = [1, 2, 3, 4, 5]
+        with self.assertRaises(ValueError):
+            fitlm(x, y)
+
+    def test_zero_variance_in_y(self):
+        """Test regression with zero variance in y to ensure it raises ValueError."""
+        x = [1, 2, 3, 4, 5]
+        y = [3, 3, 3, 3, 3]
+        with self.assertRaises(ValueError):
+            fitlm(x, y)
+
+    def test_perfectly_collinear_data(self):
+        """Test with perfectly collinear data to check for expected behavior in slope and R-squared."""
+        x = [1, 2, 3, 4, 5]
+        y = [2, 4, 6, 8, 10]
+        result = fitlm(x, y)
+        expected_slope = 2.0
+        expected_intercept = 0.0
+        np.testing.assert_almost_equal(result["Coefficients"].loc["Intercept", "Estimate"], expected_intercept, decimal=3)
+        np.testing.assert_almost_equal(result["Coefficients"].iloc[1]["Estimate"], expected_slope, decimal=3)
+        self.assertAlmostEqual(result["R-squared"], 1.0, places=3)
+
+    def test_horizontal_line(self):
+        """Test with a horizontal line where y has the same value for all x."""
+        x = [1, 2, 3, 4, 5]
+        y = [4, 4, 4, 4, 4]
+        with self.assertRaises(ValueError):
+            fitlm(x, y)
+
+    def test_identical_points(self):
+        """Test with identical points to ensure it raises ValueError due to lack of variance."""
+        x = [3, 3, 3, 3]
+        y = [5, 5, 5, 5]
+        with self.assertRaises(ValueError):
+            fitlm(x, y)
+
+    def test_multiple_observations(self):
+        """Test standard linear regression with realistic data and verify computed values."""
+        x = [10, 20, 30, 40, 50, 60]
+        y = [15, 25, 35, 45, 55, 65]
+        result = fitlm(x, y)
+        expected_intercept = 5.0
+        expected_slope = 1.0
+        np.testing.assert_almost_equal(result["Coefficients"].loc["Intercept", "Estimate"], expected_intercept, decimal=3)
+        np.testing.assert_almost_equal(result["Coefficients"].iloc[1]["Estimate"], expected_slope, decimal=3)
+        self.assertAlmostEqual(result["R-squared"], 1.0, places=3)
 
 if __name__ == '__main__':
     unittest.main()

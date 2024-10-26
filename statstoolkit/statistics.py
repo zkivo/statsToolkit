@@ -2,6 +2,7 @@ import scipy.stats as stats
 import math
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 from numpy.linalg import inv, LinAlgError
 import pingouin as pg
 
@@ -423,3 +424,58 @@ def covariance(data1, data2=None):
         data = np.column_stack((data1, data2))
 
     return np.cov(data, rowvar=False)
+
+
+def fitlm(x, y):
+    """
+    Perform a simple linear regression of y on x, returning a dictionary with the results.
+
+    Parameters
+    ----------
+    x : list or np.ndarray
+        Predictor variable.
+    y : list or np.ndarray
+        Response variable.
+
+    Returns
+    -------
+    dict
+        Dictionary containing regression coefficients, statistics, and model diagnostics.
+
+    Raises
+    ------
+    ValueError
+        If there is no variance in both `x` and `y` or insufficient data for regression.
+    """
+    x, y = np.asarray(x), np.asarray(y)
+
+    # Check for variance in x and y
+    if len(x) < 2 or len(y) < 2:
+        raise ValueError("Insufficient data for regression.")
+    if np.var(x) == 0:
+        raise ValueError("Zero variance in x.")
+    if np.var(y) == 0:
+        raise ValueError("Zero variance in y.")
+
+    # Add constant for intercept in statsmodels
+    x_with_const = sm.add_constant(x)
+    model = sm.OLS(y, x_with_const).fit()
+
+    # Prepare output dictionary
+    summary = {
+        "Coefficients": pd.DataFrame({
+            "Estimate": model.params,
+            "SE": model.bse,
+            "tStat": model.tvalues,
+            "pValue": model.pvalues
+        }).rename(index={0: "Intercept"}),
+        "Number of observations": int(model.nobs),
+        "Error degrees of freedom": int(model.df_resid),
+        "Root Mean Squared Error": np.sqrt(model.mse_resid),
+        "R-squared": model.rsquared,
+        "Adjusted R-squared": model.rsquared_adj,
+        "F-statistic vs. constant model": model.fvalue,
+        "p-value": model.f_pvalue
+    }
+
+    return summary
