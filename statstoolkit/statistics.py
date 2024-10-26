@@ -7,7 +7,9 @@ from scipy.stats import t as t_dist
 from numpy.linalg import inv, LinAlgError
 import pingouin as pg
 from statsmodels.stats.outliers_influence import summary_table
-
+import statsmodels.formula.api as smf
+from typing import Union, Optional, List
+from statsmodels.formula.api import ols
 
 
 def mean(X):
@@ -666,3 +668,95 @@ def ttest2(x, y, alpha=0.05, equal_var=True, alternative='two-sided'):
     }
 
     return h, p, ci, stats
+
+
+class AnovaResult:
+    def __init__(self, anova_table):
+        self.anova_table = anova_table
+
+    def summary(self):
+        """Return the ANOVA table as a formatted summary."""
+        return self.anova_table
+
+
+def anova(y=None, factors=None, data=None, formula=None, response=None, sum_of_squares='type I'):
+    """
+    Perform Analysis of Variance (ANOVA) with support for one-way, two-way, and N-way models.
+
+    Parameters:
+    - y: array-like, optional
+        Response variable for one-way ANOVA or with factors for multi-way ANOVA.
+    - factors: list of array-like, optional
+        A list of factors for multi-way ANOVA.
+    - data: DataFrame, optional
+        DataFrame containing data for formula-based or table-based ANOVA.
+    - formula: str, optional
+        Formula in Wilkinson notation for ANOVA (e.g., 'y ~ A + B + A:B').
+    - response: str, optional
+        Name of the response variable in data if using table-based ANOVA.
+    - sum_of_squares: str, optional
+        Type of sum of squares for ANOVA calculations. Options are 'type I', 'type II', or 'type III'.
+
+    Returns:
+    - anova_table: DataFrame
+        ANOVA table with sum of squares, degrees of freedom, F-statistic, and p-value.
+
+    Raises:
+    - ValueError: If input parameters are invalid or if any factor has only one level.
+    """
+
+    # Ensure valid sum of squares type
+    valid_sstypes = {'type I': 1, 'type II': 2, 'type III': 3}
+    if sum_of_squares not in valid_sstypes:
+        raise ValueError("sum_of_squares must be 'type I', 'type II', or 'type III'.")
+
+    # Case 1: Formula-based ANOVA
+    if formula:
+        if data is None:
+            raise ValueError("Data must be provided with a formula.")
+        model = ols(formula, data=data).fit()
+
+    # Case 2: Multi-way ANOVA with factors and response variable
+    elif factors is not None:
+        if y is None:
+            raise ValueError("Response data 'y' must be provided with factors.")
+
+        # Check if any factor has only one level
+        for i, factor in enumerate(factors):
+            if len(set(factor)) < 2:
+                raise ValueError(f"Factor 'factor_{i}' must have at least two levels.")
+
+        # Prepare DataFrame and formula
+        factor_data = {f"factor_{i}": pd.Categorical(factor) for i, factor in enumerate(factors)}
+        df = pd.DataFrame(factor_data)
+        df['y'] = y
+        formula_parts = ' + '.join(f"C(factor_{i})" for i in range(len(factors)))
+        formula = f"y ~ {formula_parts}"
+        model = ols(formula, data=df).fit()
+
+    # Case 3: One-way ANOVA with response matrix (2D y)
+    elif isinstance(y, np.ndarray) and y.ndim == 2:
+        if y.shape[1] < 2:
+            raise ValueError("For one-way ANOVA, 'y' must have at least two columns.")
+
+        # Reshape y into a long format for one-way ANOVA
+        df = pd.DataFrame(y, columns=[f"factor_{i}" for i in range(y.shape[1])])
+        df = pd.melt(df, var_name="factor", value_name="y")
+        model = ols("y ~ C(factor)", data=df).fit()
+
+    # Case 4: Table-based ANOVA with response variable name
+    elif response and data is not None:
+        if response not in data.columns:
+            raise ValueError("Response variable not found in data.")
+        formula = f"{response} ~ " + " + ".join([f"C({col})" for col in data.columns if col != response])
+        model = ols(formula, data=data).fit()
+
+    else:
+        raise ValueError(
+            "Invalid input parameters. Provide `formula` with `data`, `factors` with `y`, or a 2D `y` for one-way ANOVA.")
+
+    # Compute ANOVA table
+    anova_table = sm.stats.anova_lm(model, typ=valid_sstypes[sum_of_squares])
+
+    return anova_table
+
