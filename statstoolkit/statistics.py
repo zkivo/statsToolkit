@@ -3,6 +3,7 @@ import math
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
+from scipy.stats import t as t_dist
 from numpy.linalg import inv, LinAlgError
 import pingouin as pg
 from statsmodels.stats.outliers_influence import summary_table
@@ -608,3 +609,60 @@ def ttest(x, y=None, m=0, alpha=0.05, alternative='two-sided'):
     }
 
     return h, p_val, ci, stats_dict
+
+
+def ttest2(x, y, alpha=0.05, equal_var=True, alternative='two-sided'):
+    """
+    Perform two-sample t-test on two independent samples.
+
+    Parameters:
+    x, y : array-like
+        The two independent samples.
+    alpha : float, optional
+        Significance level for the test. Must be between 0 and 1. Default is 0.05.
+    equal_var : bool, optional
+        If True (default), perform a standard independent 2-sample test that assumes equal population variances.
+        If False, perform Welch's t-test, which does not assume equal population variance.
+    alternative : {'two-sided', 'greater', 'less'}, optional
+        Defines the alternative hypothesis.
+
+    Returns:
+    h : int
+        Test decision: 1 if the null hypothesis is rejected at the specified significance level, 0 otherwise.
+    p : float
+        p-value of the test.
+    ci : tuple
+        Confidence interval for the mean difference.
+    stats : dict
+        Dictionary containing test statistic ('t_stat') and degrees of freedom ('df').
+    """
+    from scipy.stats import ttest_ind
+
+    # Input validation
+    if len(x) == 0 or len(y) == 0:
+        raise ValueError("Input samples must not be empty.")
+    if not (0 < alpha < 1):
+        raise ValueError("Alpha must be between 0 and 1.")
+    if alternative not in {'two-sided', 'greater', 'less'}:
+        raise ValueError("Invalid alternative hypothesis specified.")
+
+    # Perform the t-test
+    t_stat, p = ttest_ind(x, y, equal_var=equal_var, alternative=alternative)
+
+    # Confidence interval
+    mean_diff = np.mean(x) - np.mean(y)
+    se_diff = np.sqrt((np.var(x, ddof=1) / len(x)) + (np.var(y, ddof=1) / len(y)))
+    df = len(x) + len(y) - 2
+    t_critical = abs(t_dist.ppf(alpha / 2, df=df))
+    ci = (mean_diff - t_critical * se_diff, mean_diff + t_critical * se_diff)
+
+    # Test decision
+    h = int(p < alpha)
+
+    # Statistics output
+    stats = {
+        "t_stat": t_stat,
+        "df": float(df)
+    }
+
+    return h, p, ci, stats

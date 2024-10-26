@@ -1,5 +1,5 @@
 import unittest
-from statstoolkit.statistics import mean, median, range_, var, std, quantile, fitlm, cov, regress, ttest
+from statstoolkit.statistics import mean, median, range_, var, std, quantile, fitlm, cov, regress, ttest, ttest2
 from statstoolkit.statistics import partialcorr
 import numpy as np
 
@@ -378,6 +378,75 @@ class TestStatFunctions(unittest.TestCase):
         y = [1.9, 2.3]
         with self.assertRaises(ValueError):
             ttest(x, y=y)
+
+    def test_two_sample_equal_var_default(self):
+        x = [2, 4, 6, 8, 10]
+        y = [1, 3, 5, 7, 9]
+        h, p, ci, stats = ttest2(x, y)
+        self.assertEqual(h, 0)
+        self.assertGreater(p, 0.05)
+
+    def test_two_sample_unequal_var(self):
+        x = [15, 18, 21, 24, 30]
+        y = [22, 25, 29, 32, 35]
+        h, p, ci, stats = ttest2(x, y, equal_var=False)
+        self.assertEqual(h, 0)
+        self.assertGreater(p, 0.05)
+
+    def test_two_sample_custom_alpha(self):
+        x = [5, 10, 15, 20, 25]
+        y = [8, 12, 18, 22, 27]
+        h, p, ci, stats = ttest2(x, y, alpha=0.01)
+        self.assertEqual(h, 0)
+        self.assertGreater(p, 0.01)
+
+    def test_two_sample_alternative_greater(self):
+        x = [10, 12, 14, 16, 18]
+        y = [6, 7, 8, 9, 10]
+        h, p, ci, stats = ttest2(x, y, alternative='greater')
+        self.assertEqual(h, 1)
+        self.assertLess(p, 0.05)
+
+    def test_two_sample_alternative_less(self):
+        x = [6, 7, 8, 9, 10]
+        y = [10, 12, 14, 16, 18]
+        h, p, ci, stats = ttest2(x, y, alternative='less')
+        self.assertEqual(h, 1)
+        self.assertLess(p, 0.05)
+
+    def test2_invalid_alpha(self):
+        x = [1, 2, 3]
+        y = [4, 5, 6]
+        with self.assertRaises(ValueError):
+            ttest2(x, y, alpha=1.5)
+
+    def test2_invalid_alternative(self):
+        x = [1, 2, 3]
+        y = [4, 5, 6]
+        with self.assertRaises(ValueError):
+            ttest2(x, y, alternative='invalid_option')
+
+    def test2_empty_sample(self):
+        x = []
+        y = [1, 2, 3]
+        with self.assertRaises(ValueError):
+            ttest2(x, y)
+
+    def test2_confidence_interval_structure(self):
+        x = [5, 6, 7, 8, 9]
+        y = [10, 11, 12, 13, 14]
+        _, _, ci, _ = ttest2(x, y)
+        self.assertEqual(len(ci), 2)
+        self.assertLess(ci[0], ci[1])
+
+    def test2_statistics_output_structure(self):
+        x = [5, 10, 15]
+        y = [20, 25, 30]
+        _, _, _, stats = ttest2(x, y)
+        self.assertIn("t_stat", stats)
+        self.assertIn("df", stats)
+        self.assertIsInstance(stats["t_stat"], float)
+        self.assertIsInstance(stats["df"], float)
 
 if __name__ == '__main__':
     unittest.main()
