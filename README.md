@@ -278,6 +278,189 @@ scatterplot_3d(x, y, z, symbol="o", title="Example 3D Scatter Plot", xlabel="X-A
 ![Example 3D Scatter Plot](examples/scatterplot_3d.png)
 
 ---
+# Probability
+
+---
+
+### 1. `binopdf(k, n, p)`
+Calculates the binomial probability mass function for given trials and success probability.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import binopdf
+
+k = 3  # number of successes
+n = 10  # number of trials
+p = 0.5  # probability of success
+print(binopdf(k, n, p))  # Output: probability of exactly 3 successes
+```
+
+### 2. `poisspdf(k, mu)`
+Calculates the Poisson probability mass function for given mean number of events.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import poisspdf
+
+k = 5  # number of events
+mu = 3  # mean number of events
+print(poisspdf(k, mu))  # Output: probability of exactly 5 events
+```
+
+### 3. `geopdf(k, p)`
+Calculates the geometric probability mass function for the number of trials needed to get the first success.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import geopdf
+
+k = 3  # number of trials
+p = 0.5  # probability of success
+print(geopdf(k, p))  # Output: probability of success on the 3rd trial
+```
+
+### 4. `nbinpdf(k, r, p)`
+Calculates the negative binomial probability mass function, where `k` is the number of failures until `r` successes occur.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import nbinpdf
+
+k = 4  # number of failures
+r = 2  # number of successes
+p = 0.5  # probability of success
+print(nbinpdf(k, r, p))  # Output: probability of exactly 4 failures before 2 successes
+```
+
+### 5. `hygepdf(k, M, n, N)`
+Calculates the hypergeometric probability mass function for the probability of drawing `k` successes from a population of `M`, with `n` successes in the sample.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import hygepdf
+
+k = 3  # successes in sample
+M = 50  # population size
+n = 20  # sample size
+N = 10  # number of successes in population
+print(hygepdf(k, M, n, N))  # Output: probability of drawing 3 successes
+```
+
+### 6. `betapdf(x, a, b)`
+Calculates the beta probability density function.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import betapdf
+
+x = 0.5
+a = 2  # shape parameter alpha
+b = 2  # shape parameter beta
+print(betapdf(x, a, b))  # Output: beta distribution density at x=0.5
+```
+
+### 7. `chi2pdf(x, df)`
+Calculates the chi-squared probability density function.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import chi2pdf
+
+x = 5
+df = 3  # degrees of freedom
+print(chi2pdf(x, df))  # Output: chi-squared density at x=5
+```
+
+### 8. `exppdf(x, scale)`
+Calculates the exponential probability density function.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import exppdf
+
+x = 2
+scale = 1  # inverse of rate parameter lambda
+print(exppdf(x, scale=scale))  # Output: exponential density at x=2
+```
+
+### 9. `fpdf(x, dfn, dfd)`
+Calculates the F-distribution probability density function.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import fpdf
+
+x = 1.5
+dfn = 5  # degrees of freedom numerator
+dfd = 2  # degrees of freedom denominator
+print(fpdf(x, dfn, dfd))  # Output: F-distribution density at x=1.5
+```
+
+### 10. `normpdf(x, mu, sigma)`
+Calculates the normal (Gaussian) probability density function.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import normpdf
+
+x = 0
+mu = 0  # mean
+sigma = 1  # standard deviation
+print(normpdf(x, mu, sigma))  # Output: normal density at x=0
+```
+
+### 11. `lognpdf(x, s, scale)`
+Calculates the log-normal probability density function.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import lognpdf
+
+x = 1.5
+s = 0.5  # shape parameter
+scale = 1  # scale parameter
+print(lognpdf(x, s, scale=scale))  # Output: log-normal density at x=1.5
+```
+
+### 12. `tpdf(x, df)`
+Calculates the Student's t probability density function.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import tpdf
+
+x = 2
+df = 10  # degrees of freedom
+print(tpdf(x, df))  # Output: t-distribution density at x=2
+```
+
+### 13. `wblpdf(x, c, scale)`
+Calculates the Weibull probability density function.
+
+#### Example Usage:
+
+```python
+from statstoolkit.probability import wblpdf
+
+x = 1.2
+c = 2  # shape parameter
+scale = 1  # scale parameter
+print(wblpdf(x, c, scale=scale))  # Output: Weibull density at x=1.2
+```
+
+---
 
 ## License
 
