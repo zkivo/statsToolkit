@@ -10,6 +10,8 @@ from statsmodels.stats.outliers_influence import summary_table
 import statsmodels.formula.api as smf
 from typing import Union, Optional, List
 from statsmodels.formula.api import ols
+from scipy.stats import kruskal
+import matplotlib.pyplot as plt
 
 
 def mean(X):
@@ -760,3 +762,66 @@ def anova(y=None, factors=None, data=None, formula=None, response=None, sum_of_s
 
     return anova_table
 
+
+def kruskalwallis(x, group=None, displayopt=False):
+    """
+    Perform the Kruskal-Wallis H-test for independent samples.
+
+    Parameters:
+    x : array-like
+        Data values. If x is a 2D array, each column is treated as a separate group.
+    group : array-like, optional
+        Group labels for the 1D array x. If provided, `x` must be 1D.
+    displayopt : bool, optional
+        If True, display the ANOVA table and boxplot. Default is False.
+
+    Returns:
+    p : float
+        P-value for the test.
+    tbl : DataFrame
+        ANOVA table containing source, H-statistic, and p-value.
+    stats : dict
+        Dictionary containing test statistics, including test_statistic, p_value, and df.
+    """
+    # Group handling: convert input to a list of groups
+    if isinstance(x, np.ndarray) and x.ndim == 2:
+        groups = [x[:, i] for i in range(x.shape[1])]
+    elif group is not None:
+        if len(x) != len(group):
+            raise ValueError("x and group must have the same length")
+        # Group data by unique group labels
+        unique_groups = np.unique(group)
+        groups = [np.array([x[i] for i in range(len(x)) if group[i] == g]) for g in unique_groups]
+    else:
+        raise ValueError("Either provide a 2D array for x or a group label array for 1D x.")
+
+    # Check for identical values in all groups
+    if all(np.all(group == group[0]) for group in groups):
+        raise ValueError("All values in each group are identical; Kruskal-Wallis test cannot be performed.")
+
+    # Run the Kruskal-Wallis test
+    h_stat, p_value = stats.kruskal(*groups)
+
+    # Create ANOVA table as DataFrame
+    tbl = pd.DataFrame({
+        "Source": ["Kruskal-Wallis", "Error"],
+        "H": [h_stat, np.nan],
+        "p-value": [p_value, np.nan]
+    })
+
+    # Prepare stats dictionary
+    stats_dict = {
+        "test_statistic": h_stat,
+        "p_value": p_value,
+        "df": len(groups) - 1,
+        "groups": len(groups)
+    }
+
+    # Display results if requested
+    if displayopt:
+        print(tbl)
+        plt.boxplot(groups, labels=unique_groups if group is not None else range(len(groups)))
+        plt.title("Kruskal-Wallis Test")
+        plt.show()
+
+    return float(p_value), tbl, stats_dict
