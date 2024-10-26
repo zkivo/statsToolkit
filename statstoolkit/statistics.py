@@ -337,27 +337,6 @@ def corrcoef(*args, **kwargs):
     P = correlation_p_values(R, len(args[0]))
     return (R, P)
 
-def cov(*args, **kwargs):
-    """
-    Estimate a covariance matrix, given data and weights.
-
-    Parameters
-    ----------
-    
-        m : array_like
-            A 1-D or 2-D array containing multiple variables and observations. Each row of `m` represents a
-            variable, and each column a single observation of all those variables. Also see `rowvar` below.
-        y : array_like, optional
-            An additional set of variables and observations. `y` has the same form as that of `m`.
-    
-    Returns
-    -------
-    
-        out : ndarray
-            The covariance matrix of the variables. 
-    """
-    return np.cov(*args, **kwargs, rowvar=False)
-
 
 def partialcorr(X, columns=None):
     """
@@ -388,7 +367,7 @@ def partialcorr(X, columns=None):
     return partial_corr_matrix
 
 
-def covariance(data1, data2=None):
+def cov(data1, data2=None):
     """
     Calculate the covariance matrix for one or two sets of data.
 
