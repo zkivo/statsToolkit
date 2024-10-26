@@ -1,5 +1,5 @@
 import unittest
-from statstoolkit.statistics import mean, median, range_, var, std, quantile, fitlm, cov, regress
+from statstoolkit.statistics import mean, median, range_, var, std, quantile, fitlm, cov, regress, ttest
 from statstoolkit.statistics import partialcorr
 import numpy as np
 
@@ -281,6 +281,103 @@ class TestStatFunctions(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             regress(y, X)
+
+    def test_one_sample_default_mean(self):
+        """Test one-sample t-test with default mean (0)."""
+        x = [2.1, 2.5, 2.8, 3.2, 2.7]
+        h, p, ci, stats = ttest(x)
+        expected_h = 1  # Null hypothesis rejected
+        self.assertEqual(h, expected_h)
+        self.assertTrue(0 < p < 0.05)  # Significance level at 5%
+        self.assertTrue(ci[0] < np.mean(x) < ci[1])  # CI should contain mean
+
+    def test_one_sample_non_zero_mean(self):
+        """Test one-sample t-test with non-zero mean (m=2.5)."""
+        x = [2.1, 2.5, 2.8, 3.2, 2.7]
+        h, p, ci, stats = ttest(x, m=2.5)
+        self.assertIsInstance(h, int)
+        self.assertIsInstance(p, float)
+        self.assertTrue(ci[0] < np.mean(x) - 2.5 < ci[1])
+
+    def test_one_sample_one_sided_greater(self):
+        """Test one-sample one-sided t-test with alternative='greater'."""
+        x = [2.5, 2.7, 3.1, 2.9, 3.0]  # Mean above the null hypothesis mean of 2.0
+        m = 2.0
+        expected_h = 1  # We expect to reject the null hypothesis
+
+        # Run the test
+        h, p, ci, stats = ttest(x, m=m, alternative='greater')
+
+        self.assertEqual(h, expected_h)
+
+    def test_one_sample_one_sided_less(self):
+        """Test one-sample t-test with one-sided alternative (less)."""
+        x = [1.1, 1.5, 1.8, 1.3, 1.7]
+        h, p, ci, stats = ttest(x, m=2.0, alternative='less')
+        expected_h = 1  # Null hypothesis rejected
+        self.assertEqual(h, expected_h)
+        self.assertTrue(0 < p < 0.05)  # One-sided p-value should be less than 0.05
+        self.assertTrue(ci[0] < np.mean(x) - 2.0 < ci[1])
+
+    def test_paired_sample(self):
+        """Test paired-sample t-test with two related samples."""
+        x = [2.1, 2.5, 2.8, 3.0, 2.7]
+        y = [1.9, 2.3, 2.6, 2.8, 2.5]
+        h, p, ci, stats = ttest(x, y=y)
+        expected_h = 1  # Null hypothesis rejected
+        self.assertEqual(h, expected_h)
+        self.assertTrue(0 < p < 0.05)
+        self.assertTrue(ci[0] < np.mean(np.array(x) - np.array(y)) < ci[1])
+
+    def test_different_confidence_level(self):
+        """Test one-sample t-test with a higher confidence level (99%)."""
+        x = [2.1, 2.5, 2.8, 3.2, 2.7]
+        h, p, ci, stats = ttest(x, alpha=0.01)  # 99% confidence level
+        expected_h = 1  # Null hypothesis rejected
+        self.assertEqual(h, expected_h)
+        self.assertTrue(ci[0] < np.mean(x) < ci[1])
+
+    def test_no_significant_difference(self):
+        """Test one-sample t-test where null hypothesis is not rejected."""
+        x = [0.1, -0.2, 0.05, -0.1, 0.15]
+        h, p, ci, stats = ttest(x)
+        expected_h = 0  # Null hypothesis not rejected
+        self.assertEqual(h, expected_h)
+        self.assertTrue(p > 0.05)
+
+    def test_stats_output(self):
+        """Test that the stats dictionary contains t-statistic and df."""
+        x = [2.1, 2.5, 2.8, 3.2, 2.7]
+        h, p, ci, stats = ttest(x)
+        self.assertIn("t_stat", stats)
+        self.assertIn("df", stats)
+        self.assertIsInstance(stats["t_stat"], float)
+        self.assertIsInstance(stats["df"], int)
+
+    def test_invalid_alternative(self):
+        """Test that invalid alternative hypothesis raises ValueError."""
+        x = [2.1, 2.5, 2.8, 3.2, 2.7]
+        with self.assertRaises(ValueError):
+            ttest(x, alternative="invalid_option")
+
+    def test_invalid_alpha(self):
+        """Test that invalid alpha raises ValueError."""
+        x = [2.1, 2.5, 2.8, 3.2, 2.7]
+        with self.assertRaises(ValueError):
+            ttest(x, alpha=1.5)
+
+    def test_empty_sample(self):
+        """Test that empty sample raises ValueError."""
+        x = []
+        with self.assertRaises(ValueError):
+            ttest(x)
+
+    def test_mismatched_lengths(self):
+        """Test that mismatched lengths for paired-sample raises ValueError."""
+        x = [2.1, 2.5, 2.8]
+        y = [1.9, 2.3]
+        with self.assertRaises(ValueError):
+            ttest(x, y=y)
 
 if __name__ == '__main__':
     unittest.main()

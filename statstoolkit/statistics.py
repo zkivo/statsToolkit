@@ -530,3 +530,81 @@ def regress(y, X, alpha=0.05):
     return b, bint, r, rint, stats
 
 
+def ttest(x, y=None, m=0, alpha=0.05, alternative='two-sided'):
+    """
+    Perform a one-sample or paired-sample t-test.
+
+    Parameters:
+    x : array-like
+        The first sample data.
+    y : array-like, optional
+        The second sample data for paired t-test. Default is None.
+    m : float, optional
+        The hypothesized population mean for one-sample t-test. Default is 0.
+    alpha : float, optional
+        Significance level for confidence intervals. Default is 0.05.
+    alternative : {'two-sided', 'greater', 'less'}, optional
+        Specifies the alternative hypothesis. Default is 'two-sided'.
+
+    Returns:
+    h : int
+        Test decision: 1 if the null hypothesis is rejected, 0 otherwise.
+    p : float
+        p-value of the test.
+    ci : tuple
+        Confidence interval for the mean difference.
+    stats : dict
+        Contains the t-statistic and degrees of freedom (df).
+    """
+
+    # Convert inputs to numpy arrays
+    x = np.asarray(x)
+    if y is not None:
+        y = np.asarray(y)
+
+    # Validate inputs
+    if not (0 < alpha < 1):
+        raise ValueError("Alpha must be between 0 and 1.")
+    if alternative not in {'two-sided', 'greater', 'less'}:
+        raise ValueError("Alternative hypothesis must be 'two-sided', 'greater', or 'less'.")
+    if len(x) == 0 or (y is not None and len(y) == 0):
+        raise ValueError("Input samples must not be empty.")
+
+    # Perform test based on the input parameters
+    if y is None:
+        # One-sample t-test
+        t_stat, p_val = stats.ttest_1samp(x, m)
+    else:
+        # Paired-sample t-test
+        if len(x) != len(y):
+            raise ValueError("Both samples must have the same length for a paired t-test.")
+        t_stat, p_val = stats.ttest_rel(x, y)
+
+    # Adjust p-value for one-sided tests
+    if alternative == 'greater':
+        if t_stat < 0:
+            p_val = 1.0  # Fail the test since we're looking for t_stat > 0
+        else:
+            p_val /= 2
+    elif alternative == 'less':
+        if t_stat > 0:
+            p_val = 1.0  # Fail the test since we're looking for t_stat < 0
+        else:
+            p_val /= 2
+
+    # Compute the test decision
+    h = int(p_val < alpha)
+
+    # Confidence interval calculation
+    mean_diff = np.mean(x) - (np.mean(y) if y is not None else m)
+    se = stats.sem(x - y if y is not None else x)
+    t_crit = stats.t.ppf(1 - alpha / 2, df=len(x) - 1)
+    ci = (mean_diff - t_crit * se, mean_diff + t_crit * se)
+
+    # Collect statistics
+    stats_dict = {
+        "t_stat": t_stat,
+        "df": len(x) - 1 if y is None else len(x) - 1
+    }
+
+    return h, p_val, ci, stats_dict
