@@ -89,6 +89,101 @@ print(quantile(data, 0.75))  # Output: 4.0 (75th percentile)
 
 ---
 
+### 7. `corrcoef(x, y, alternative='two-sided', method=None)`
+Calculates the Pearson correlation coefficient between two datasets and provides the p-value for testing non-correlation.
+
+#### Example Usage:
+
+```python
+from statstoolkit.statistics import corrcoef
+
+x = [1, 2, 3, 4, 5]
+y = [2, 4, 6, 8, 10]
+R, P = corrcoef(x, y)
+print("Correlation coefficient:", R)
+print("P-value matrix:", P)
+```
+
+### 8. `partialcorr(X, columns=None)`
+Computes the partial correlation matrix, controlling for the influence of all other variables.
+
+#### Example Usage:
+
+```python
+from statstoolkit.statistics import partialcorr
+import pandas as pd
+
+data = pd.DataFrame({
+    'A': [1, 2, 3, 4, 5],
+    'B': [2, 4, 6, 8, 10],
+    'C': [5, 6, 7, 8, 9]
+})
+partial_corr_matrix = partialcorr(data)
+print(partial_corr_matrix)
+```
+
+### 9. `cov(data1, data2=None)`
+Calculates the covariance matrix between two datasets or within a single dataset.
+
+#### Example Usage:
+
+```python
+from statstoolkit.statistics import cov
+
+data1 = [1, 2, 3, 4]
+data2 = [2, 4, 6, 8]
+print(cov(data1, data2))
+```
+
+### 10. `fitlm(x, y)`
+Performs simple linear regression of `y` on `x`, returning a dictionary of regression results.
+
+#### Example Usage:
+
+```python
+from statstoolkit.statistics import fitlm
+
+x = [1, 2, 3, 4]
+y = [2, 4, 6, 8]
+result = fitlm(x, y)
+print(result)
+```
+
+### 11. `anova(y=None, factors=None, data=None, formula=None, response=None, sum_of_squares='type I')`
+Performs one-way, two-way, or N-way Analysis of Variance (ANOVA) on data, supporting custom models.
+
+#### Example Usage:
+
+```python
+from statstoolkit.statistics import anova
+import pandas as pd
+
+data = pd.DataFrame({
+    'y': [23, 25, 20, 21],
+    'A': ['High', 'Low', 'High', 'Low'],
+    'B': ['Type1', 'Type2', 'Type1', 'Type2']
+})
+result = anova(y='y', data=data, formula='y ~ A + B + A:B')
+print(result)
+```
+
+### 12. `kruskalwallis(x, group=None, displayopt=False)`
+Performs the Kruskal-Wallis H-test for independent samples, a non-parametric alternative to one-way ANOVA.
+
+#### Example Usage:
+
+```python
+from statstoolkit.statistics import kruskalwallis
+
+x = [1.2, 3.4, 5.6, 1.1, 3.6, 5.5]
+group = ['A', 'A', 'A', 'B', 'B', 'B']
+p_value, anova_table, stats = kruskalwallis(x, group=group, displayopt=True)
+print("P-value:", p_value)
+print(anova_table)
+```
+
+---
+
 # Visualization Functions
 
 This module contains several flexible visualization functions built using **Matplotlib** and **Seaborn**, allowing users to generate commonly used plots such as bar charts, pie charts, histograms, boxplots, and scatter plots. The visualizations are designed for customization, giving the user control over various parameters such as color, labels, figure size, and more.
