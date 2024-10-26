@@ -280,8 +280,6 @@ scatterplot_3d(x, y, z, symbol="o", title="Example 3D Scatter Plot", xlabel="X-A
 ---
 # Probability
 
----
-
 ### 1. `binopdf(k, n, p)`
 Calculates the binomial probability mass function for given trials and success probability.
 
