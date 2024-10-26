@@ -87,8 +87,6 @@ print(quantile(data, 0.5))  # Output: 3.0 (Median)
 print(quantile(data, 0.75))  # Output: 4.0 (75th percentile)
 ```
 
----
-
 ### 7. `corrcoef(x, y, alternative='two-sided', method=None)`
 Calculates the Pearson correlation coefficient between two datasets and provides the p-value for testing non-correlation.
 
