@@ -1,5 +1,6 @@
 from statstoolkit.statistics import *
 from statstoolkit.visualization import *
+from statstoolkit.utils import *
 import numpy as np
 
 # 1. Display Bar Chart
@@ -79,7 +80,7 @@ print("r: ", r)
 print("rint: ", rint)
 pprint.pp(_stats)
 
-# 10. One sample ttest
+# 10. One sample t-test
 x = np.array([1, 0, -1, 3, 5, -2, 0.5])
 
 h, p, ci, _stats = ttest(x)
@@ -97,3 +98,14 @@ print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
 pprint.pp(_stats)
+
+# 11. Two sample t-test
+
+x = normrnd(2.5, 4, 1, 50).flatten()
+y = normrnd(2.5, 4, 1, 50).flatten()
+
+print(x, y)
+
+h = ttest2(x, y)
+
+print(h)
