@@ -43,3 +43,57 @@ abc = np.stack((a, b, c), axis=1)
 
 print(cov(a, b))
 print(cov(abc))
+
+# 8 Display Linear Regression
+x = np.array([1,      0,    -1,   3,    5,   -2,  0.5])
+y = np.array([1.65, 0.2, -1.69, 4.7, 7.57, -3.2, 0.65])
+
+mdl = fitlm(x, y)
+
+import pprint
+
+def pretty_print(d):
+    formatted_dict = {}
+    for key, value in d.items():
+        if isinstance(value, pd.DataFrame):
+            formatted_dict[key] = value.to_string()  # Convert DataFrame to a string without index
+        else:
+            formatted_dict[key] = value
+    pprint.pprint(formatted_dict)
+
+pretty_print(mdl)
+
+# 9. Multiple Linear Regression
+x1 = np.array([1,      0,  -1,    3,   5, -2, 0.5])
+x2 = np.array([-1,     2,   4, -0.5,   1,  1,   0])
+x3 = np.array([-0.4, 1.2,   0,    3, 2.5, -1,   6])
+
+y = np.array([4.49, 4.03, -2.04, 9.93, 10.78, 0.23, 15.2])
+X = np.column_stack((np.ones_like(x1), x1, x2, x3))
+
+b, bint, r, rint, _stats = regress(y, X)
+
+print("b: ", b)
+print("bint: ", bint)
+print("r: ", r)
+print("rint: ", rint)
+pprint.pp(_stats)
+
+# 10. One sample ttest
+x = np.array([1, 0, -1, 3, 5, -2, 0.5])
+
+h, p, ci, _stats = ttest(x)
+
+print("h: ", h)
+print("p: ", p)
+print("ci: ", ci)
+pprint.pp(_stats)
+
+# added alpha and mu
+
+h, p, ci, _stats = ttest(x, m = 0.8, alpha=0.01)
+
+print("h: ", h)
+print("p: ", p)
+print("ci: ", ci)
+pprint.pp(_stats)

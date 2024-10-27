@@ -532,6 +532,19 @@ def regress(y, X, alpha=0.05):
         "Error variance": model.mse_resid
     }
 
+    # Calculate the residual standard error (RSE)
+    degrees_of_freedom = model.df_resid
+    residual_standard_error = np.sqrt(np.sum(r**2) / degrees_of_freedom)
+
+    # Set confidence level, e.g., 95%
+    t_value = t_dist.ppf(1 - alpha/2, degrees_of_freedom)
+
+    # Calculate the confidence interval for each residual
+    lower_bound = np.array(r - t_value * residual_standard_error)
+    upper_bound = np.array(r + t_value * residual_standard_error)
+
+    rint = np.column_stack((lower_bound, upper_bound))
+
     return b, bint, r, rint, stats
 
 
@@ -601,15 +614,18 @@ def ttest(x, y=None, m=0, alpha=0.05, alternative='two-sided'):
     h = int(p_val < alpha)
 
     # Confidence interval calculation
-    mean_diff = np.mean(x) - (np.mean(y) if y is not None else m)
+    mean_diff = np.mean(x) - (np.mean(y) if y is not None else 0)
     se = stats.sem(x - y if y is not None else x)
-    t_crit = stats.t.ppf(1 - alpha / 2, df=len(x) - 1)
+    df = len(x) - 1
+    t_crit = stats.t.ppf(1 - alpha / 2, df=df)
     ci = (mean_diff - t_crit * se, mean_diff + t_crit * se)
+    sd = np.std(x, ddof=1) if y is None else np.std(x - y, ddof=1)
 
     # Collect statistics
     stats_dict = {
         "t_stat": t_stat,
-        "df": len(x) - 1 if y is None else len(x) - 1
+        "df": df,
+        "sd": sd
     }
 
     return h, p_val, ci, stats_dict
