@@ -1,5 +1,5 @@
-from statstoolkit import *
-from statstoolkit import *
+from statstoolkit.statistics import *
+from statstoolkit.visualization import *
 import numpy as np
 
 # 1. Display Bar Chart
