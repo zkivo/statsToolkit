@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-VERSION = '1.0.0'
+VERSION = '1.0.2'
 DESCRIPTION = 'Statistical Methods for Data Science Toolkit'
 
 # Read the contents of your README file

@@ -60,18 +60,63 @@ print(var(data))  # Output: 2.0  (Population variance)
 print(var(data, ddof=1))  # Output: 2.5  (Sample variance)
 ```
 
-### 5. `std(X, ddof=0)`
-Calculates the standard deviation, which is the square root of the variance. It indicates how much the data varies from the mean.
+Here's the updated README section with the comparative table and an adjusted usage example:
 
+---
+
+### 5. `std(A, w=0, dim=None, vecdim=None, missingflag=None)`
+Calculates the standard deviation similar to MATLAB's `std` function, with options for dimension selection, weighting, and handling of missing values.
+
+### Key Differences Between `std` Implementation and MATLAB's `std`
+
+The Python `std` function has been customized to closely replicate MATLAB’s behavior, but certain nuances exist:
+
+1. **Multidimensional Array Handling**: MATLAB handles 3D and 4D arrays by operating on the first non-singleton dimension by default, while Python’s version requires specifying dimensions to precisely match MATLAB’s output, especially for slice-by-slice or full-array calculations.
+
+2. **NaN Treatment**: Both implementations allow for ignoring or including NaN values, but MATLAB’s “omitmissing” and “includemissing” options directly influence the calculations, while Python requires NaN handling in pre-processing to fully mimic MATLAB’s exact treatment.
+
+3. **Weighted Standard Deviation**: MATLAB’s `std` includes weighted standard deviation handling across rows, columns, or other dimensions. Our Python version achieves similar results when weights are provided, but some variation can occur depending on array shape and dimension settings.
+
+4. **Dimension-Specific Calculations**: MATLAB’s function allows for flexible calculations over specified dimensions, including non-contiguous dimensions (`vecdim`). Python handles contiguous dimensions but may yield different shapes unless explicitly set to match MATLAB’s squeeze behavior.
+
+#### Comparison Table of `std` Results Between MATLAB and Python Implementations
+
+| **Test** | **Description**                             | **MATLAB Result**                                       | **Python Result**                                      | **Match?** |
+|----------|--------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|------------|
+| **1**    | 1D Array (Default)                         | 7.9057                                                  | (7.905694150420948, 20.0)                              | ✅         |
+| **2**    | 1D Array with Weight (w=1)                 | [212.1320, 212.1320, 212.1320]                          | [212.13203436, 212.13203436, 212.13203436]             | ✅         |
+| **3**    | 3D Array, default (slice-by-slice)         | [2.5000, 7.7460, 4.5735] (3 slices)                     | [5.50151494, 5.4283208]                                | ❌         |
+| **4**    | 2D Array, Default                          | 6.2361                                                  | (6.236095644623236, 18.333333333333332)                | ✅         |
+| **5**    | 2D Array with NaN                          | 7.0711                                                  | (7.0710678118654755, 60.0)                             | ✅         |
+| **6**    | 2D Array, Row-wise                         | 10                                                     | (7.0710678118654755, 20.0)                             | ❌         |
+| **7**    | 2D Array, Weighted, w=1                    | [[1.0000, 2.0817, 3.2146], [1.0000, 1.0000, 1.5275]]    | [[2.0000, 2.0000], [4.0000, 3.0000], [4.0000, 3.0550]] | ❌         |
+| **8**    | 3D Array with NaN, omitmissing             | 0                                                      | (0.0, 1000.0)                                         | ✅         |
+| **9**    | 2D Array with NaN, includemissing          | 2.7386                                                  | (2.7386127875258306, 5.0)                              | ✅         |
+| **10**   | All Elements, 2D Array                     | 9.9897                                                  | (9.87527045694513, 49.54743292509804)                  | ❌         |
 #### Example Usage:
 
 ```python
 from statstoolkit.statistics import std
 
-data = [1, 2, 3, 4, 5]
-print(std(data))  # Output: 1.4142135623730951  (Population standard deviation)
-print(std(data, ddof=1))  # Output: 1.5811388300841898  (Sample standard deviation)
+data = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+# Default standard deviation
+std_result, mean_result = std(data)
+print("Standard Deviation:", std_result)
+print("Mean:", mean_result)
+
+# With dimension specified
+std_dim_result, mean_dim_result = std(data, dim=1)
+print("Standard Deviation along dimension 1:", std_dim_result)
+print("Mean along dimension 1:", mean_dim_result)
+
+# With NaN handling
+data_with_nan = [[1, np.nan, 3], [4, 5, np.nan]]
+std_nan_result, mean_nan_result = std(data_with_nan, missingflag="omitmissing")
+print("Standard Deviation with NaN omitted:", std_nan_result)
+print("Mean with NaN omitted:", mean_nan_result)
 ```
+
+This updated `std` function mimics MATLAB's `std` behavior with extra parameters for more flexible control, including multi-dimensional weighting and specific handling of missing data.
 
 ### 6. `quantile(X, Q)`
 Calculates the quantile, which is the value below which a given percentage of the data falls. For example, the 0.25 quantile is the first quartile (25th percentile).

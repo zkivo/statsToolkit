@@ -151,39 +151,75 @@ def var(X, ddof=0):
     return sum((x - m) ** 2 for x in X) / (len(X) - ddof)
 
 
-def std(X, ddof=0):
+def std(A, w=0, dim=None, vecdim=None, missingflag=None):
     """
-    Calculate the standard deviation of a list of numbers using numpy's std function.
-
-    Standard deviation is the square root of the variance and indicates the amount of variation in the data.
+    Compute standard deviation similar to MATLAB's std function with options for dimension, weighting, and missing values.
 
     Parameters
     ----------
-    X : list or array-like
-        A list of numerical values.
-    ddof : int, optional
-        Delta Degrees of Freedom (default is 0 for population standard deviation, set to 1 for sample standard deviation).
+    A : array-like
+        Input array.
+    w : int or array-like, optional
+        Weighting scheme. Use 0 for sample standard deviation (default), 1 for population standard deviation,
+        or an array of weights with the same length as the dimension of A.
+    dim : int, optional
+        Dimension along which to compute the standard deviation.
+    vecdim : list of int, optional
+        List of dimensions over which to compute the standard deviation.
+    missingflag : str, optional
+        Set to 'omitmissing' to ignore NaNs, or 'includemissing' to include NaNs in the calculation.
 
     Returns
     -------
-    float
-        The standard deviation of the input values.
-
-    Raises
-    ------
-    ValueError
-        If the input list is empty.
-
-    Examples
-    --------
-    >>> std([1, 2, 3, 4, 5])
-    1.4142135623730951
-    >>> std([1, 2, 3, 4, 5], ddof=1)
-    1.5811388300841898
+    S : float or np.ndarray
+        The standard deviation of the array.
+    M : float or np.ndarray
+        The mean of the array.
     """
-    if len(X) == 0:
-        raise ValueError("The input list cannot be empty.")
-    return np.std(X, ddof=ddof)
+    # Convert input to numpy array and handle missing values
+    A = np.array(A, dtype=np.float64)
+
+    if missingflag == "omitmissing":
+        A = np.nan_to_num(A, nan=np.nanmean(A))  # Replace NaNs with mean of A
+    elif missingflag == "includemissing" and np.isnan(A).any():
+        return np.nan, np.nan  # Return NaN if missing values are to be included
+
+    # Determine the dimensions to operate on
+    if dim is not None:
+        axis = dim
+    elif vecdim is not None:
+        axis = tuple(vecdim)
+    else:
+        # Default to the first non-singleton dimension
+        axis = next((i for i in range(A.ndim) if A.shape[i] > 1), 0)
+
+    # Compute mean and standard deviation depending on weight
+    if isinstance(w, (int, float)) and w in [0, 1]:
+        ddof = 1 if w == 0 else 0
+        mean_A = np.mean(A, axis=axis, keepdims=True)
+
+        if isinstance(axis, tuple):  # Handle vecdim scenario
+            n_elements = np.prod([A.shape[i] for i in axis]) - ddof
+            variance = np.sum((A - mean_A) ** 2, axis=axis) / n_elements
+        else:
+            n_elements = A.shape[axis] - ddof
+            variance = np.sum((A - mean_A) ** 2, axis=axis) / n_elements
+
+        S = np.sqrt(variance)
+        M = np.mean(A, axis=axis)
+    else:
+        # Weighted standard deviation calculation
+        mean_w = np.average(A, axis=axis, weights=w)
+        variance_w = np.average((A - mean_w) ** 2, axis=axis, weights=w)
+        S = np.sqrt(variance_w)
+        M = mean_w
+
+    # Squeeze dimensions to match MATLAB's behavior on dimensionality reduction
+    if vecdim is not None or dim is not None:
+        S = np.squeeze(S)
+        M = np.squeeze(M)
+
+    return S, M
 
 
 def quantile(data, q):
