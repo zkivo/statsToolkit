@@ -116,7 +116,6 @@ print("Standard Deviation with NaN omitted:", std_nan_result)
 print("Mean with NaN omitted:", mean_nan_result)
 ```
 
-This updated `std` function mimics MATLAB's `std` behavior with extra parameters for more flexible control, including multi-dimensional weighting and specific handling of missing data.
 
 ### 6. `quantile(X, Q)`
 Calculates the quantile, which is the value below which a given percentage of the data falls. For example, the 0.25 quantile is the first quartile (25th percentile).
