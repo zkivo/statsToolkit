@@ -186,7 +186,6 @@ def std(X, ddof=0):
     return np.std(X, ddof=ddof)
 
 
-
 def quantile(data, q):
     """
     Calculate the q-th quantile of the data.
