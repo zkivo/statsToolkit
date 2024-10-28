@@ -153,7 +153,7 @@ def var(X, ddof=0):
 
 def std(X, ddof=0):
     """
-    Calculate the standard deviation of a list of numbers.
+    Calculate the standard deviation of a list of numbers using numpy's std function.
 
     Standard deviation is the square root of the variance and indicates the amount of variation in the data.
 
@@ -181,7 +181,10 @@ def std(X, ddof=0):
     >>> std([1, 2, 3, 4, 5], ddof=1)
     1.5811388300841898
     """
-    return math.sqrt(var(X, ddof=ddof))
+    if len(X) == 0:
+        raise ValueError("The input list cannot be empty.")
+    return np.std(X, ddof=ddof)
+
 
 
 def quantile(data, q):
