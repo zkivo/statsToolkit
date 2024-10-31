@@ -681,7 +681,7 @@ def ttest2(x, y, alpha=0.05, equal_var=True, alternative='two-sided'):
     equal_var : bool, optional
         If True (default), perform a standard independent 2-sample test that assumes equal population variances.
         If False, perform Welch's t-test, which does not assume equal population variance.
-    alternative : {'two-sided', 'greater', 'less'}, optional
+    alternative : {'two-sided', 'left', 'right'}, optional
         Defines the alternative hypothesis.
 
     Returns:
@@ -701,18 +701,28 @@ def ttest2(x, y, alpha=0.05, equal_var=True, alternative='two-sided'):
         raise ValueError("Input samples must not be empty.")
     if not (0 < alpha < 1):
         raise ValueError("Alpha must be between 0 and 1.")
-    if alternative not in {'two-sided', 'greater', 'less'}:
+    if alternative.lower() not in {'two-sided', 'right', 'left'}:
         raise ValueError("Invalid alternative hypothesis specified.")
 
-    # Perform the t-test
-    t_stat, p = ttest_ind(x, y, equal_var=equal_var, alternative=alternative)
+    # check if altrenative is right or less without considering case
+    if alternative.lower() == 'right':
+        alternative = 'greater'
+    elif alternative.lower() == 'left':
+        alternative = 'less'
 
+    # Perform the t-test
+    results = ttest_ind(x, y, equal_var=equal_var, alternative=alternative)
+    t_stat, p, d = results.statistic, results.pvalue, results.df
+    print("results: ", results)
     # Confidence interval
     mean_diff = np.mean(x) - np.mean(y)
     se_diff = np.sqrt((np.var(x, ddof=1) / len(x)) + (np.var(y, ddof=1) / len(y)))
     df = len(x) + len(y) - 2
     t_critical = abs(t_dist.ppf(alpha / 2, df=df))
     ci = (mean_diff - t_critical * se_diff, mean_diff + t_critical * se_diff)
+
+    # s1, s2 = np.var(x, ddof=1), np.var(y, ddof=1)
+    # sd = np.sqrt(((len(x) - 1) * s1 + (len(y) - 1) * s2) / df)
 
     # Test decision
     h = int(p < alpha)
