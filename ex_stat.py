@@ -225,11 +225,12 @@ x3 = [-0.4, 1.2,  0,    3, 2.5, -1,   6]
 # concatenate the arrays column-wise
 X = np.column_stack((x1, x2, x3))
 
-f_stat, p_val = anova1(x1, x2, x3)
+f_stat, p_val, table = anova1(X, displayopt=True)
 
 print("One-way Anova")
 print("p-value: ", p_val)
 print("f_stat: ", f_stat)
+print(table)
 
 print()
 print("--------------------------------------------------")

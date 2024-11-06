@@ -731,7 +731,7 @@ class AnovaResult:
         """Return the ANOVA table as a formatted summary."""
         return self.anova_table
 
-def anova1(*args, **kwargs):
+def anova1(x, group=None, displayopt=False):
     """Perform one-way ANOVA.
 
     The one-way ANOVA tests the null hypothesis that two or more groups have
@@ -740,13 +740,13 @@ def anova1(*args, **kwargs):
 
     Parameters
     ----------
-    sample1, sample2, ... : array_like
-        The sample measurements for each group.  There must be at least
-        two arguments.  If the arrays are multidimensional, then all the
-        dimensions of the array must be the same except for `axis`.
-    axis : int, optional
-        Axis of the input arrays along which the test is applied.
-        Default is 0.
+    x : array-like
+        Data values. If `x` is a 2D array, each column is treated as a separate group.
+        otherwise, `x` must be a 1D array and group must be provided.
+    group : array-like, optional
+        Group labels for the 1D array x. `x` must be 1D.
+    displayopt : bool, optional
+        If True, display the ANOVA table and boxplot. Default is False.
 
     Returns
     -------
@@ -755,7 +755,49 @@ def anova1(*args, **kwargs):
     pvalue : float
         The associated p-value from the F distribution.
     """
-    return stats.f_oneway(*args, **kwargs)
+        # Group handling: convert input to a list of groups
+    if isinstance(x, np.ndarray) and x.ndim == 2:
+        groups = x.copy()
+    elif isinstance(x, np.ndarray) and x.ndim == 1 and group is not None:
+        if len(x) != len(group):
+            raise ValueError("`x` and `group` must have the same length.")
+        # Group data by unique group labels
+        unique_groups = np.unique(group)
+        groups = [np.array([x[i] for i in range(len(x)) if group[i] == g]) for g in unique_groups]
+    else:
+        raise ValueError("Either provide: 2D `x` array where each column represent a group " \
+                         "OR 1D `x` array and 1D `group` array.")
+    
+    groups = np.array(groups)
+
+    # Reshape data for use in statsmodels
+    num_rows, num_cols = groups.shape
+    df = pd.DataFrame({
+        'value': groups.flatten('F'),
+        'group': np.repeat(np.arange(num_cols), num_rows)
+    })
+
+    # Perform one-way ANOVA
+    model = ols('value ~ C(group)', data=df).fit()
+    anova_table = sm.stats.anova_lm(model, typ=1)
+    total_sum_sq = anova_table['sum_sq'].sum()
+    total_df = anova_table['df'].sum()
+    total_row = pd.Series({
+        'sum_sq': total_sum_sq,
+        'df': total_df,
+        'F': np.nan,
+        'PR(>F)': np.nan
+    }, name='Total')
+    anova_table = anova_table._append(total_row)
+
+    # Display results if requested
+    if displayopt:
+        plt.figure(figsize=(10, 6))
+        plt.boxplot(groups)
+        plt.title("One-way ANOVA")
+        plt.show()
+
+    return anova_table.loc['C(group)']['F'], anova_table.loc['C(group)']['PR(>F)'], anova_table
 
 def anova(y=None, factors=None, data=None, formula=None, response=None, sum_of_squares='type I'):
     """
