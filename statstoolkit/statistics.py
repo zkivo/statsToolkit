@@ -797,7 +797,7 @@ def anova1(x, group=None, displayopt=False):
         plt.title("One-way ANOVA")
         plt.show()
 
-    return anova_table.loc['C(group)']['F'], anova_table.loc['C(group)']['PR(>F)'], anova_table
+    return anova_table.loc['C(group)']['PR(>F)'], anova_table, anova_table.loc['C(group)']['F']
 
 def anova(y=None, factors=None, data=None, formula=None, response=None, sum_of_squares='type I'):
     """
@@ -881,7 +881,7 @@ def anova(y=None, factors=None, data=None, formula=None, response=None, sum_of_s
     return anova_table
 
 
-def kruskalwallis(x, group=None, displayopt=False):
+def kruskalwallis(x, groups=None, displayopt=False):
     """
     Perform the Kruskal-Wallis H-test for independent samples.
 
@@ -903,43 +903,67 @@ def kruskalwallis(x, group=None, displayopt=False):
     """
     # Group handling: convert input to a list of groups
     if isinstance(x, np.ndarray) and x.ndim == 2:
-        groups = [x[:, i] for i in range(x.shape[1])]
-    elif isinstance(x, np.ndarray) and x.ndim == 1 and group is not None:
-        if len(x) != len(group):
+        pass
+    elif isinstance(x, np.ndarray) and x.ndim == 1 and groups is not None:
+        if len(x) != len(groups):
             raise ValueError("x and group must have the same length")
         # Group data by unique group labels
-        unique_groups = np.unique(group)
-        groups = [np.array([x[i] for i in range(len(x)) if group[i] == g]) for g in unique_groups]
+        unique_groups = np.unique(groups)
+        x = np.array([x[np.array(groups) == group] for group in unique_groups]).T
     else:
         raise ValueError("Either provide: 2D x array  OR  1D x array and 1D goup array.")
 
     # Check for identical values in all groups
-    if all(np.all(group == group[0]) for group in groups):
+    if all(np.all(group == group[0]) for group in x):
         raise ValueError("All values in each group are identical; Kruskal-Wallis test cannot be performed.")
 
-    # Run the Kruskal-Wallis test
-    h_stat, p_value = stats.kruskal(*groups)
+    ssb, sse = calculate_ssb_sse_using_ranks(x)
 
-    # Create ANOVA table as DataFrame
-    tbl = pd.DataFrame({
-        "Source": ["Kruskal-Wallis", "Error"],
-        "H": [h_stat, np.nan],
-        "p-value": [p_value, np.nan]
+    columns_list = [x[:, i] for i in range(x.shape[1])]
+
+    # Run the Kruskal-Wallis test
+    h_stat, p_value = stats.kruskal(*columns_list)
+
+    table = pd.DataFrame({
+        "Source": ["Columns", "Error", "Total"],
+        "SS": [ssb, sse, ssb + sse],
+        "DF": [x.shape[1] - 1, x.size - x.shape[1], x.shape[1] - 1 + x.size - x.shape[1]],
+        "MS": [ssb / (x.shape[1] - 1), sse / (x.size - x.shape[1]), np.nan],
+        "Chi-sq": [h_stat, np.nan, np.nan],
+        "Prob>Chi-sq": [p_value, np.nan, np.nan]
     })
 
-    # Prepare stats dictionary
-    stats_dict = {
-        "test_statistic": h_stat,
-        "p_value": p_value,
-        "df": len(groups) - 1,
-        "groups": len(groups)
-    }
+    table.set_index('Source', inplace=True)
 
     # Display results if requested
     if displayopt:
-        print(tbl)
-        plt.boxplot(groups, labels=unique_groups if group is not None else range(len(groups)))
-        plt.title("Kruskal-Wallis Test")
+        plt.figure(figsize=(10, 6))
+        plt.boxplot(x)
+        plt.title("Kraskal-Wallis Test")
         plt.show()
 
-    return float(p_value), tbl, stats_dict
+    return table.loc["Columns"]["Prob>Chi-sq"], table, table.loc["Columns"]["Chi-sq"]
+
+def calculate_ssb_sse(data):
+    """
+        this works with anova1
+    """
+    grand_mean = np.mean(data)
+    num_groups = data.shape[1]
+    n = data.shape[0]
+    ssb = np.sum(n * (np.mean(data, axis=0) - grand_mean) ** 2)
+    sse = np.sum((data - np.mean(data, axis=0)) ** 2)
+    return ssb, sse
+
+def calculate_ssb_sse_using_ranks(data):
+    """
+        this works with kruskalwallis
+    """
+    ranks = stats.rankdata(data)
+    ranked_data = ranks.reshape(data.shape)
+    group_means = np.mean(ranked_data, axis=0)
+    overall_mean = np.mean(ranks)
+    group_sizes = data.shape[0]  # assuming equal sizes for each group
+    ssb = np.sum(group_sizes * (group_means - overall_mean) ** 2)
+    sse = np.sum((ranked_data - group_means) ** 2)
+    return ssb, sse

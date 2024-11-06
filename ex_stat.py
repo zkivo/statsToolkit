@@ -225,7 +225,7 @@ x3 = [-0.4, 1.2,  0,    3, 2.5, -1,   6]
 # concatenate the arrays column-wise
 X = np.column_stack((x1, x2, x3))
 
-f_stat, p_val, table = anova1(X, displayopt=True)
+p_val, table, f_stat = anova1(X, displayopt=False)
 
 print("One-way Anova")
 print("p-value: ", p_val)
@@ -245,9 +245,13 @@ x3 = np.array([-0.4, 1.2,  0,    3, 2.5, -1,   6])
 # concatenate the arrays column-wise
 X = np.column_stack((x1, x2, x3))
 
-p, table, h_stat = kruskalwallis(x1, ['a', 'b', 'c', 'a', 'b', 'c', 'a'])
+# This works also if we flat the matrix and give a group array
+# flatten the array column-wise
+# X = X.flatten('F')
+# groups = np.array(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'c', 'c', 'c', 'c'])
 
-print("Kruskal-Wallis H-test")
-print("p-value: ", p)
-print("table: ", table)
+p_val, table, h_stat = kruskalwallis(X)
+
+print("p_value: ", p_val)
 print("h_stat: ", h_stat)
+print(table)
