@@ -104,10 +104,13 @@ print("p: ", p)
 print("ci: ", ci)
 pprint.pp(_stats)
 
-# Two sample t-test examples
-print("\n-----------------------------------")
-print("Two sample t-test")
-print("-----------------------------------")
+
+print()
+print("--------------------------------------------------")
+print("------------- Two sample t-test -------------")
+print("--------------------------------------------------")
+print()
+
 x = normrnd(2.5, 4, 1, 50).flatten()
 y = normrnd(2.5, 4, 1, 50).flatten()
 
@@ -167,6 +170,43 @@ h, p, ci, _stats = ttest2(x, y, alpha=0.03, equal_var=False)
 
 print()
 print("Unqual variances, aplha = 0.03")
+print("h: ", h)
+print("p: ", p)
+print("ci: ", ci)
+pprint.pp(_stats)
+
+print()
+print("--------------------------------------------------")
+print("--------- Two sample in Facabook dataset ---------")
+print("--------------------------------------------------")
+print()
+
+"""
+    The dataset was downloaded from:
+      https://archive.ics.uci.edu/dataset/368/facebook+metrics
+"""
+
+# Read the CSV file
+df = pd.read_csv('data/dataset_Facebook.csv', sep=';')
+
+# Split data into paid and not paid
+paid_users = df[df['Paid'] == 1]['Lifetime Engaged Users']
+not_paid_users = df[df['Paid'] == 0]['Lifetime Engaged Users']
+
+h, p, ci, _stats = ttest2(not_paid_users, paid_users, equal_var=False)
+
+print()
+print("t-test of Paid vs not paing Users about the lifetime engagedment.")
+print("h: ", h)
+print("p: ", p)
+print("ci: ", ci)
+pprint.pp(_stats)
+
+h, p, ci, _stats = ttest2(not_paid_users, paid_users, 
+                          equal_var=False, alpha=0.03)
+
+print()
+print("Same but with alpha = 0.03")
 print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
