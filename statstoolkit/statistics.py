@@ -731,7 +731,7 @@ class AnovaResult:
         """Return the ANOVA table as a formatted summary."""
         return self.anova_table
 
-def anova1(x, group=None, displayopt=False):
+def anova1(x, groups=None, displayopt=False):
     """Perform one-way ANOVA.
 
     The one-way ANOVA tests the null hypothesis that two or more groups have
@@ -755,25 +755,23 @@ def anova1(x, group=None, displayopt=False):
     pvalue : float
         The associated p-value from the F distribution.
     """
-        # Group handling: convert input to a list of groups
+    # Group handling: convert input to a list of groups
     if isinstance(x, np.ndarray) and x.ndim == 2:
-        groups = x.copy()
-    elif isinstance(x, np.ndarray) and x.ndim == 1 and group is not None:
-        if len(x) != len(group):
-            raise ValueError("`x` and `group` must have the same length.")
+        pass
+    elif isinstance(x, np.ndarray) and x.ndim == 1 and groups is not None:
+        if len(x) != len(groups):
+            raise ValueError("`x` and `group` must have the same length")
         # Group data by unique group labels
-        unique_groups = np.unique(group)
-        groups = [np.array([x[i] for i in range(len(x)) if group[i] == g]) for g in unique_groups]
+        unique_groups = np.unique(groups)
+        x = np.array([x[np.array(groups) == group] for group in unique_groups]).T
     else:
         raise ValueError("Either provide: 2D `x` array where each column represent a group " \
                          "OR 1D `x` array and 1D `group` array.")
-    
-    groups = np.array(groups)
 
     # Reshape data for use in statsmodels
-    num_rows, num_cols = groups.shape
+    num_rows, num_cols = x.shape
     df = pd.DataFrame({
-        'value': groups.flatten('F'),
+        'value': x.flatten('F'),
         'group': np.repeat(np.arange(num_cols), num_rows)
     })
 
@@ -793,7 +791,7 @@ def anova1(x, group=None, displayopt=False):
     # Display results if requested
     if displayopt:
         plt.figure(figsize=(10, 6))
-        plt.boxplot(groups)
+        plt.boxplot(x)
         plt.title("One-way ANOVA")
         plt.show()
 
@@ -906,16 +904,13 @@ def kruskalwallis(x, groups=None, displayopt=False):
         pass
     elif isinstance(x, np.ndarray) and x.ndim == 1 and groups is not None:
         if len(x) != len(groups):
-            raise ValueError("x and group must have the same length")
+            raise ValueError("`x` and `group` must have the same length")
         # Group data by unique group labels
         unique_groups = np.unique(groups)
         x = np.array([x[np.array(groups) == group] for group in unique_groups]).T
     else:
-        raise ValueError("Either provide: 2D x array  OR  1D x array and 1D goup array.")
-
-    # Check for identical values in all groups
-    if all(np.all(group == group[0]) for group in x):
-        raise ValueError("All values in each group are identical; Kruskal-Wallis test cannot be performed.")
+        raise ValueError("Either provide: 2D `x` array where each column represent a group " \
+                         "OR 1D `x` array and 1D `group` array.")
 
     ssb, sse = calculate_ssb_sse_using_ranks(x)
 

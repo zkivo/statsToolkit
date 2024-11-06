@@ -225,10 +225,13 @@ x3 = [-0.4, 1.2,  0,    3, 2.5, -1,   6]
 # concatenate the arrays column-wise
 X = np.column_stack((x1, x2, x3))
 
-p_val, table, f_stat = anova1(X, displayopt=False)
+# This works also if we flat the matrix and give a group array
+# X = X.flatten('F')
+# groups = np.array(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'c', 'c', 'c', 'c'])
 
-print("One-way Anova")
-print("p-value: ", p_val)
+p_val, table, f_stat = anova1(X, displayopt=True)
+
+print("p_value: ", p_val)
 print("f_stat: ", f_stat)
 print(table)
 
