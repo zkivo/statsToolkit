@@ -599,7 +599,7 @@ def ttest(x, y=None, m=0, alpha=0.05, alternative='two-sided'):
         The hypothesized population mean for one-sample t-test. Default is 0.
     alpha : float, optional
         Significance level for confidence intervals. Default is 0.05.
-    alternative : {'two-sided', 'greater', 'less'}, optional
+    alternative : {'two-sided', 'left', 'right'}, optional
         Specifies the alternative hypothesis. Default is 'two-sided'.
 
     Returns:
@@ -621,42 +621,35 @@ def ttest(x, y=None, m=0, alpha=0.05, alternative='two-sided'):
     # Validate inputs
     if not (0 < alpha < 1):
         raise ValueError("Alpha must be between 0 and 1.")
-    if alternative not in {'two-sided', 'greater', 'less'}:
-        raise ValueError("Alternative hypothesis must be 'two-sided', 'greater', or 'less'.")
     if len(x) == 0 or (y is not None and len(y) == 0):
         raise ValueError("Input samples must not be empty.")
+    if alternative.lower() not in {'two-sided', 'right', 'left'}:
+        raise ValueError("Invalid alternative hypothesis specified.")
 
+    # check if altrenative is right or less without considering case
+    if alternative.lower() == 'right':
+        alternative = 'greater'
+    elif alternative.lower() == 'left':
+        alternative = 'less'
+    
     # Perform test based on the input parameters
     if y is None:
         # One-sample t-test
-        t_stat, p_val = stats.ttest_1samp(x, m)
+        result = stats.ttest_1samp(x, m, alternative=alternative)
     else:
         # Paired-sample t-test
         if len(x) != len(y):
             raise ValueError("Both samples must have the same length for a paired t-test.")
-        t_stat, p_val = stats.ttest_rel(x, y)
+        result = stats.ttest_rel(x, y, alternative=alternative)
 
-    # Adjust p-value for one-sided tests
-    if alternative == 'greater':
-        if t_stat < 0:
-            p_val = 1.0  # Fail the test since we're looking for t_stat > 0
-        else:
-            p_val /= 2
-    elif alternative == 'less':
-        if t_stat > 0:
-            p_val = 1.0  # Fail the test since we're looking for t_stat < 0
-        else:
-            p_val /= 2
+    t_stat  = result.statistic
+    p_value = result.pvalue
+    df = result.df
+    ci = result.confidence_interval(1 - alpha)
 
     # Compute the test decision
-    h = int(p_val < alpha)
+    h = int(p_value < alpha)
 
-    # Confidence interval calculation
-    mean_diff = np.mean(x) - (np.mean(y) if y is not None else 0)
-    se = stats.sem(x - y if y is not None else x)
-    df = len(x) - 1
-    t_crit = stats.t.ppf(1 - alpha / 2, df=df)
-    ci = (mean_diff - t_crit * se, mean_diff + t_crit * se)
     sd = np.std(x, ddof=1) if y is None else np.std(x - y, ddof=1)
 
     # Collect statistics
@@ -666,7 +659,7 @@ def ttest(x, y=None, m=0, alpha=0.05, alternative='two-sided'):
         "sd": sd
     }
 
-    return h, p_val, ci, stats_dict
+    return h, p_value, ci, stats_dict
 
 
 def ttest2(x, y, alpha=0.05, equal_var=True, alternative='two-sided'):
@@ -711,21 +704,15 @@ def ttest2(x, y, alpha=0.05, equal_var=True, alternative='two-sided'):
         alternative = 'less'
 
     # Perform the t-test
-    results = ttest_ind(x, y, equal_var=equal_var, alternative=alternative)
-    t_stat, p, d = results.statistic, results.pvalue, results.df
-    print("results: ", results)
-    # Confidence interval
-    mean_diff = np.mean(x) - np.mean(y)
-    se_diff = np.sqrt((np.var(x, ddof=1) / len(x)) + (np.var(y, ddof=1) / len(y)))
-    df = len(x) + len(y) - 2
-    t_critical = abs(t_dist.ppf(alpha / 2, df=df))
-    ci = (mean_diff - t_critical * se_diff, mean_diff + t_critical * se_diff)
+    result = ttest_ind(x, y, equal_var=equal_var, alternative=alternative)
 
-    # s1, s2 = np.var(x, ddof=1), np.var(y, ddof=1)
-    # sd = np.sqrt(((len(x) - 1) * s1 + (len(y) - 1) * s2) / df)
+    t_stat  = result.statistic
+    p_value = result.pvalue
+    df = result.df
+    ci = result.confidence_interval(1 - alpha)
 
     # Test decision
-    h = int(p < alpha)
+    h = int(p_value < alpha)
 
     # Statistics output
     stats = {
@@ -733,7 +720,7 @@ def ttest2(x, y, alpha=0.05, equal_var=True, alternative='two-sided'):
         "df": float(df)
     }
 
-    return h, p, ci, stats
+    return h, p_value, ci, stats
 
 
 class AnovaResult:

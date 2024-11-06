@@ -84,11 +84,12 @@ print("rint: ", rint)
 pprint.pp(_stats)
 
 # 10. One sample t-test
+print("\nOne sample t-test")
+
 x = np.array([1, 0, -1, 3, 5, -2, 0.5])
 
 h, p, ci, _stats = ttest(x)
 
-print("Example 10:")
 print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
@@ -104,13 +105,15 @@ print("ci: ", ci)
 pprint.pp(_stats)
 
 # Two sample t-test examples
-
+print("\n-----------------------------------")
+print("Two sample t-test")
+print("-----------------------------------")
 x = normrnd(2.5, 4, 1, 50).flatten()
 y = normrnd(2.5, 4, 1, 50).flatten()
 
 h, p, ci, _stats = ttest2(x, y)
 
-print("Example 11:")
+print()
 print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
@@ -121,6 +124,7 @@ y = normrnd(2.5, 1, 1, 50).flatten()
 
 h, p, ci, _stats = ttest2(x, y, alpha = 0.03)
 
+print()
 print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
@@ -128,6 +132,8 @@ pprint.pp(_stats)
 
 h, p, ci, _stats = ttest2(x, y, alternative='left')
 
+print()
+print("left tail")
 print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
@@ -135,6 +141,8 @@ pprint.pp(_stats)
 
 h, p, ci, _stats = ttest2(x, y, alternative='right')
 
+print()
+print("right tail")
 print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
@@ -145,6 +153,8 @@ y = normrnd(2.5, 4, 1, 50).flatten()
 
 h, p, ci, _stats = ttest2(x, y, equal_var=False)
 
+print()
+print("Unqual variances")
 print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
@@ -155,6 +165,8 @@ y = normrnd(2.5, 7, 1, 50).flatten()
 
 h, p, ci, _stats = ttest2(x, y, alpha=0.03, equal_var=False)
 
+print()
+print("Unqual variances, aplha = 0.03")
 print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
