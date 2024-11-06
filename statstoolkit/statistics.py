@@ -5,7 +5,7 @@ import numpy as np
 import statsmodels.api as sm
 from scipy.stats import t as t_dist
 from numpy.linalg import inv, LinAlgError
-import pingouin as pg
+# import pingouin as pg
 from statsmodels.stats.outliers_influence import summary_table
 import statsmodels.formula.api as smf
 from typing import Union, Optional, List
@@ -731,6 +731,31 @@ class AnovaResult:
         """Return the ANOVA table as a formatted summary."""
         return self.anova_table
 
+def anova1(*args, **kwargs):
+    """Perform one-way ANOVA.
+
+    The one-way ANOVA tests the null hypothesis that two or more groups have
+    the same population mean.  The test is applied to samples from two or
+    more groups, possibly with differing sizes.
+
+    Parameters
+    ----------
+    sample1, sample2, ... : array_like
+        The sample measurements for each group.  There must be at least
+        two arguments.  If the arrays are multidimensional, then all the
+        dimensions of the array must be the same except for `axis`.
+    axis : int, optional
+        Axis of the input arrays along which the test is applied.
+        Default is 0.
+
+    Returns
+    -------
+    statistic : float
+        The computed F statistic of the test.
+    pvalue : float
+        The associated p-value from the F distribution.
+    """
+    return stats.f_oneway(*args, **kwargs)
 
 def anova(y=None, factors=None, data=None, formula=None, response=None, sum_of_squares='type I'):
     """
@@ -837,14 +862,14 @@ def kruskalwallis(x, group=None, displayopt=False):
     # Group handling: convert input to a list of groups
     if isinstance(x, np.ndarray) and x.ndim == 2:
         groups = [x[:, i] for i in range(x.shape[1])]
-    elif group is not None:
+    elif isinstance(x, np.ndarray) and x.ndim == 1 and group is not None:
         if len(x) != len(group):
             raise ValueError("x and group must have the same length")
         # Group data by unique group labels
         unique_groups = np.unique(group)
         groups = [np.array([x[i] for i in range(len(x)) if group[i] == g]) for g in unique_groups]
     else:
-        raise ValueError("Either provide a 2D array for x or a group label array for 1D x.")
+        raise ValueError("Either provide: 2D x array  OR  1D x array and 1D goup array.")
 
     # Check for identical values in all groups
     if all(np.all(group == group[0]) for group in groups):

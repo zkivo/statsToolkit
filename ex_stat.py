@@ -211,3 +211,42 @@ print("h: ", h)
 print("p: ", p)
 print("ci: ", ci)
 pprint.pp(_stats)
+
+print()
+print("--------------------------------------------------")
+print("--------- One-way Anova ---------")
+print("--------------------------------------------------")
+print()
+
+x1 = [1,      0, -1,    3,   5, -2, 0.5]
+x2 = [-1,     2,  4, -0.5,   1,  1,   0]
+x3 = [-0.4, 1.2,  0,    3, 2.5, -1,   6]
+
+# concatenate the arrays column-wise
+X = np.column_stack((x1, x2, x3))
+
+f_stat, p_val = anova1(x1, x2, x3)
+
+print("One-way Anova")
+print("p-value: ", p_val)
+print("f_stat: ", f_stat)
+
+print()
+print("--------------------------------------------------")
+print("--------- Kruskal-Wallis H-test ---------")
+print("--------------------------------------------------")
+print()
+
+x1 = np.array([1,      0, -1,    3,   5, -2, 0.5])
+x2 = np.array([-1,     2,  4, -0.5,   1,  1,   0])
+x3 = np.array([-0.4, 1.2,  0,    3, 2.5, -1,   6])
+
+# concatenate the arrays column-wise
+X = np.column_stack((x1, x2, x3))
+
+p, table, h_stat = kruskalwallis(x1, ['a', 'b', 'c', 'a', 'b', 'c', 'a'])
+
+print("Kruskal-Wallis H-test")
+print("p-value: ", p)
+print("table: ", table)
+print("h_stat: ", h_stat)
