@@ -711,13 +711,21 @@ def ttest2(x, y, alpha=0.05, equal_var=True, alternative='two-sided'):
     df = result.df
     ci = result.confidence_interval(1 - alpha)
 
+    if equal_var:
+        # Calculate the pooled standard deviation for equal variance case
+        sd = np.sqrt(((len(x) - 1) * np.var(x, ddof=1) + (len(y) - 1) * np.var(y, ddof=1)) / (len(x) + len(y) - 2))
+    else:
+        # Calculate the standard deviation for unequal variance case
+        sd = (np.std(x, ddof=1), np.std(y, ddof=1))
+
     # Test decision
     h = int(p_value < alpha)
 
     # Statistics output
     stats = {
         "t_stat": t_stat,
-        "df": float(df)
+        "df": float(df),
+        "sd": sd
     }
 
     return h, p_value, ci, stats

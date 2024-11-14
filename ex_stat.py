@@ -83,8 +83,11 @@ print("r: ", r)
 print("rint: ", rint)
 pprint.pp(_stats)
 
-# 10. One sample t-test
-print("\nOne sample t-test")
+print()
+print("--------------------------------------------------")
+print("------------- One sample t-test -------------")
+print("--------------------------------------------------")
+print()
 
 x = np.array([1, 0, -1, 3, 5, -2, 0.5])
 
@@ -176,9 +179,9 @@ print("ci: ", ci)
 pprint.pp(_stats)
 
 print()
-print("--------------------------------------------------")
-print("--------- Two sample in Facabook dataset ---------")
-print("--------------------------------------------------")
+print("---------------------------------------------------------")
+print("--------- Two sample t-test in Facabook dataset ---------")
+print("---------------------------------------------------------")
 print()
 
 """
@@ -229,7 +232,7 @@ X = np.column_stack((x1, x2, x3))
 # X = X.flatten('F')
 # groups = np.array(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'c', 'c', 'c', 'c'])
 
-p_val, table, f_stat = anova1(X, displayopt=True)
+p_val, table, f_stat = anova1(X, displayopt=False)
 
 print("p_value: ", p_val)
 print("f_stat: ", f_stat)
