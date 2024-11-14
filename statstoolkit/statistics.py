@@ -339,28 +339,11 @@ def corrcoef(*args, **kwargs):
 
     Returns
     -------
-    result : `~scipy.stats._result_classes.PearsonRResult`
-        An object with the following attributes:
-
-        statistic : float
+    result : tuple
+        statistic : np.array
             Pearson product-moment correlation coefficient.
-        pvalue : float
+        pvalue : np.array
             The p-value associated with the chosen alternative.
-
-        The object has the following method:
-
-        confidence_interval(confidence_level, method)
-            This computes the confidence interval of the correlation
-            coefficient `statistic` for the given confidence level.
-            The confidence interval is returned in a ``namedtuple`` with
-            fields `low` and `high`. If `method` is not provided, the
-            confidence interval is computed using the Fisher transformation
-            [1]_. If `method` is an instance of `BootstrapMethod`, the
-            confidence interval is computed using `scipy.stats.bootstrap` with
-            the provided configuration options and other appropriate settings.
-            In some cases, confidence limits may be NaN due to a degenerate
-            resample, and this is typical for very small samples (~6
-            observations).
     """
 
     def correlation_p_values(corr_matrix, n):
@@ -378,7 +361,7 @@ def corrcoef(*args, **kwargs):
         
         return p_matrix
 
-    R = np.corrcoef(*args, **kwargs, rowvar=False)
+    R = np.corrcoef(*args, **kwargs)
     P = correlation_p_values(R, len(args[0]))
     return (R, P)
 

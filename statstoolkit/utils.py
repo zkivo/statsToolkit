@@ -2,6 +2,8 @@ from scipy.integrate import quad, dblquad
 import numpy as np
 import pandas as pd
 import re
+import pprint
+
 
 
 def readmatrix(filename, range_str=None):
@@ -1055,3 +1057,12 @@ def fillmissing_with_mean(X):
         return X
     else:
         raise TypeError("Input should be a pandas DataFrame or numpy ndarray.")
+
+def pretty_print(d):
+    formatted_dict = {}
+    for key, value in d.items():
+        if isinstance(value, pd.DataFrame):
+            formatted_dict[key] = value.to_string()  # Convert DataFrame to a string without index
+        else:
+            formatted_dict[key] = value
+    pprint.pprint(formatted_dict)

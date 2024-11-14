@@ -2,9 +2,11 @@ from statstoolkit.probability import *
 from statstoolkit.utils import *
 import matplotlib.pyplot as plt
 
-# ----------------------------- #
-# Example 1: Normal Distribution
-# ----------------------------- #
+print()
+print("-----------------------------------------------")
+print("------------- Normal Distribution -------------")
+print("-----------------------------------------------")
+print()
 
 mu = -1.5
 sigma = 2
@@ -19,9 +21,11 @@ plt.axhline(0, color='black', linestyle='dashdot', linewidth=0.5)  # x-axis
 plt.axvline(0, color='black', linestyle='dashdot', linewidth=0.5)  # y-axis
 plt.title('PDF of N(-1.5, 2)')
 
-# ----------------------------- #
-# Example 2: Multivariate Normal Distribution
-# ----------------------------- #
+print()
+print("------------------------------------------------------------")
+print("------------- Multivariate Normal Distribution -------------")
+print("------------------------------------------------------------")
+print()
 
 # Define the mean (mu) and covariance matrix (sigma)
 mu = np.array([-1.5, 2])
@@ -50,9 +54,11 @@ ax.set_ylabel('y')
 ax.set_zlabel('Probability Density')
 ax.set_title('Multivariate Normal Distribution')
 
-# ----------------------------- #
-# Example 3: Generate a Custom PDF
-# ----------------------------- #
+print()
+print("-------------------------------------------------")
+print("------------- Generate a Custom PDF -------------")
+print("-------------------------------------------------")
+print()
 
 # Define the PDF function
 def genpdf(x):
@@ -74,9 +80,11 @@ plt.ylabel('Probability Density')
 plt.legend()
 # plt.grid(True)
 
-# ----------------------------- #
-# Example 4: Hypergeometric Distribution
-# ----------------------------- #
+print()
+print("-------------------------------------------------")
+print("------------- Hypergeometric Distribution -------------")
+print("-------------------------------------------------")
+print()
 
 # Parameters
 M = 500  # Population size
@@ -94,9 +102,11 @@ plt.step(x, y)  # Stairs plot (commented out similar to the MATLAB code)
 plt.title('CDF of Hypergeometric')
 plt.grid(True)
 
-# ----------------------------- #
-# Example 5: Custom CDF
-# ----------------------------- #
+print()
+print("--------------------------------------")
+print("------------- Custom CDF -------------")
+print("--------------------------------------")
+print()
 
 # Define the function gencf
 def gencf(x):
@@ -116,9 +126,11 @@ plt.ylabel('Probability Density')
 plt.legend()
 plt.grid(True)
 
-# ----------------------------- #
-# Example 6: Binomial CDF examples
-# ----------------------------- #
+print()
+print("-------------------------------------------------")
+print("------------- Binomial CDF examples -------------")
+print("-------------------------------------------------")
+print()
 
 print(binocdf(20, 75, 0.23)) # 0.8153
 print(1 - binocdf(14, 75, 0.23)) # 0.7714
@@ -128,9 +140,11 @@ print(tcdf(2.31, 73)) # 0.9881
 print(1 - tcdf(8.25, 73)) # 2.3865e-12
 print(tcdf(9.63, 73) - tcdf(3.17, 73)) # 0.0011
 
-# ----------------------------- #
-# Example 7: Calculate the probability of a custom PDF
-# ----------------------------- #
+print()
+print("---------------------------------------------------------------------")
+print("------------- Calculate the probability of a custom PDF -------------")
+print("---------------------------------------------------------------------")
+print()
 
 def denf(x, c):
     return c * (1 + x) * (2 + np.sin(3 * x))
@@ -158,9 +172,11 @@ prob_2d = integral2(denf_2d, 0, 1 / 2, ymin, ymax)
 
 print("prob_2d:", prob_2d) # 0.1246
 
-# ----------------------------- #
-# Example 8: Calculate Expectation and Variance
-# ----------------------------- #
+print()
+print("--------------------------------------------------------------")
+print("------------- Calculate Expectation and Variance -------------")
+print("--------------------------------------------------------------")
+print()
 
 def denf(x, c):
     return c * x * (1 + x) * (2 + np.sin(3 * x))
@@ -176,9 +192,11 @@ V_x  = integral(lambda x: denvf(x, c0), 1, 3)
 print("Mu_x (mean):", Mu_x) # 1.2506
 print("V_x (variance):", V_x) # 0.7344
 
-# ----------------------------- #
-# Example 9: Critical values
-# ----------------------------- #
+print()
+print("-------------------------------------------")
+print("------------- Critical values -------------")
+print("-------------------------------------------")
+print()
 
 alpha = 0.0132
 print(norminv(1 - alpha)) # 2.2203
@@ -202,9 +220,12 @@ print(finv(1 - alpha, v1, v2)) # 4.0072
 print(finv(1 - alpha / 2, v1, v2)) # 4.7321
 print(finv(alpha / 2, v1, v2)) # 0.1710
 
-# ----------------------------- #
-# Example 10: Generate random values
-# ----------------------------- #
+print()
+print("--------------------------------------------------")
+print("------------- Generate random values -------------")
+print("--------------------------------------------------")
+print()
+
 
 print(randperm(7))              # [2 1 5 4 6 3 7]
 print(randi([1, 350], 1, 5))    # [[  8 292 240 296 196]]
