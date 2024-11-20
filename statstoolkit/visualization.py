@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
-def bar_chart(x, y, title=None, xlabel=None, ylabel=None, color=None, figsize=(10, 6), **kwargs):
+def bar(x, y, title=None, xlabel=None, ylabel=None, color=None, figsize=(10, 6), **kwargs):
     """
     Create a bar chart.
 
@@ -39,7 +39,7 @@ def bar_chart(x, y, title=None, xlabel=None, ylabel=None, color=None, figsize=(1
     plt.show()
 
 
-def pie_chart(sizes, labels=None, title=None, colors=None, explode=None, autopct='%1.1f%%', shadow=False, startangle=90,
+def pie(sizes, labels=None, title=None, colors=None, explode=None, autopct='%1.1f%%', shadow=False, startangle=90,
               **kwargs):
     """
     Create a pie chart.
@@ -77,7 +77,7 @@ def pie_chart(sizes, labels=None, title=None, colors=None, explode=None, autopct
     plt.show()
 
 
-def histogram(x, bins=10, title=None, xlabel=None, ylabel=None, color=None, figsize=(10, 6), **kwargs):
+def hist(x, bins=10, title=None, xlabel=None, ylabel=None, color=None, figsize=(10, 6), **kwargs):
     """
     Create a histogram.
 
@@ -151,7 +151,7 @@ def boxplot(MPG, origin=None, title=None, xlabel=None, ylabel=None, color=None, 
     plt.show()
 
 
-def scatterplot(x, y, z=None, symbol='o', title=None, xlabel=None, ylabel=None, color=None, figsize=(10, 6), **kwargs):
+def scatter_2d(x, y, z=None, symbol='o', title=None, xlabel=None, ylabel=None, color=None, figsize=(10, 6), **kwargs):
     """
     Create a scatter plot.
 
@@ -196,7 +196,7 @@ def scatterplot(x, y, z=None, symbol='o', title=None, xlabel=None, ylabel=None, 
     plt.show()
 
 
-def scatterplot_3d(x, y, z, symbol='o', title=None, xlabel=None, ylabel=None, zlabel=None, color=None, figsize=(10, 6),
+def scatter(x, y, z = None, symbol='o', title=None, xlabel=None, ylabel=None, zlabel=None, color=None, figsize=(10, 6),
                    **kwargs):
     """
     Create a true 3D scatter plot.
@@ -230,6 +230,11 @@ def scatterplot_3d(x, y, z, symbol='o', title=None, xlabel=None, ylabel=None, zl
     --------
     >>> scatterplot_3d([1, 2, 3, 4], [10, 20, 25, 30], [50, 100, 200, 300], title="3D Scatter Plot")
     """
+
+    if z is None:
+        scatter_2d(x, y, symbol=symbol, title=title, xlabel=xlabel, ylabel=ylabel, color=color, figsize=figsize, **kwargs)
+        return
+
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111, projection='3d')
 
