@@ -41,8 +41,10 @@ b = np.array([-1,      2,   4, -0.5,    1,  1,   0])
 c = np.array([-0.4,  1.2,   0,    3,  2.5, -1,   6])
 
 R, P = corrcoef(a, b)
-print('R:', R)
-print('P:', P)
+print('R:')
+print(R)
+print('P:')
+print(P)
 
 print()
 print("---------------------------------------------")
@@ -52,8 +54,10 @@ print()
 
 abc = np.stack((a, b, c), axis=1)
 
-print("a, b: ", cov(a, b))
-print("a, b, c:", cov(abc))
+print("a, b: ")
+print(cov(a, b))
+print("a, b, c:")
+print(cov(abc))
 
 print()
 print("---------------------------------------------")
