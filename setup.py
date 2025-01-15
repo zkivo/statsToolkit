@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-VERSION = '1.0.2'
+VERSION = '1.0.3'
 DESCRIPTION = 'Statistical Methods for Data Science Toolkit'
 
 # Read the contents of your README file
@@ -26,7 +26,7 @@ setup(
         'matplotlib',
         'seaborn',
         'statsmodels',
-        'pingouin'
+        'pingouin',
     ],
     keywords=[
         "statistics", "data science", "machine learning", "data analysis",
