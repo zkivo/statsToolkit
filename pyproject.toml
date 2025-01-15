@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "statstoolkit"
+version = "1.0.4"
+description = "Statistical Methods for Data Science Toolkit"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Eng. Marco Schivo", email = "marcoschivo1@gmail.com"},
+    {name = "Eng. Alberto Biscalchin", email = "biscalchin.mau.se@gmail.com"}
+]
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "matplotlib",
+    "seaborn",
+    "statsmodels",
+    "pingouin"
+]
+keywords = [
+    "statistics", "data science", "machine learning", "data analysis",
+    "descriptive statistics", "probability distributions", "visualizations"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License"
+]
+
+[tool.setuptools.packages.find]
+where = ["statstoolkit"]
