@@ -11,7 +11,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 # Setting up
 setup(
-    name="statsToolkit",
+    name="statstoolkit",
     version=VERSION,
     author="Eng. Marco Schivo and Eng. Alberto Biscalchin",
     author_email="<biscalchin.mau.se@gmail.com>, <marcoschivo1@gmail.com>",
